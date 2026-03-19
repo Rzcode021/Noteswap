@@ -66,47 +66,53 @@ const approveNote = async (req, res) => {
 // PUT /api/admin/:id/reject
 const rejectNote = async (req, res) => {
   try {
-    const { reason } = req.body;
-
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findById(req.params.id).populate('subject')
 
     if (!note) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: 'Note not found' })
     }
 
-    if (note.status === 'rejected') {
-      return res.status(400).json({ message: 'Note is already rejected' });
-    }
+    // Update note status
+    note.status          = 'rejected'
+    note.rejectionReason = req.body.reason || 'Does not meet quality standards'
+    await note.save()
 
-    // if note was previously approved decrement subject count
-    if (note.status === 'approved') {
-      await Subject.findByIdAndUpdate(note.subject, { $inc: { notesCount: -1 } });
-    }
-
-    // delete file from Cloudinary
+    // ✅ Delete file from Cloudinary
     if (note.filePublicId) {
       try {
-        const resourceType = note.fileType === 'image' ? 'image' : 'raw';
+        const resourceType = note.fileType === 'image' ? 'image' : 'raw'
         await cloudinary.uploader.destroy(note.filePublicId, {
           resource_type: resourceType,
-        });
-        console.log(`Deleted from Cloudinary: ${note.filePublicId}`);
-      } catch (cloudinaryError) {
-        console.error('Cloudinary delete error:', cloudinaryError.message);
+        })
+        console.log('🗑️ Cloudinary file deleted:', note.filePublicId)
+      } catch (err) {
+        console.error('Cloudinary delete error:', err.message)
       }
     }
 
-    // delete note from MongoDB completely
-    await note.deleteOne();
+    // ✅ Clean up subject if no other non-rejected notes use it
+    if (note.subject) {
+      const otherNotesCount = await Note.countDocuments({
+        subject: note.subject._id,
+        _id:     { $ne: note._id },
+        status:  { $ne: 'rejected' },
+      })
+      if (otherNotesCount === 0) {
+        await Subject.deleteOne({ _id: note.subject._id })
+        console.log('🗑️ Unused subject deleted:', note.subject.name)
+      }
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'Note rejected and file deleted from cloud',
-    });
+      message: 'Note rejected successfully',
+      data: note,
+    })
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Reject note error:', error.message)
+    return res.status(500).json({ message: 'Server error', error: error.message })
   }
-};
+}
 
 // GET /api/admin/notes
 const getAllNotes = async (req, res) => {
@@ -189,6 +195,59 @@ const deleteUser = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+const deleteNoteAdmin = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id).populate('subject')
+
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' })
+    }
+
+    // ✅ Delete file from Cloudinary
+    if (note.filePublicId) {
+      try {
+        const resourceType = note.fileType === 'image' ? 'image' : 'raw'
+        await cloudinary.uploader.destroy(note.filePublicId, {
+          resource_type: resourceType,
+        })
+        console.log('🗑️ Cloudinary file deleted:', note.filePublicId)
+      } catch (err) {
+        console.error('Cloudinary delete error:', err.message)
+      }
+    }
+
+    // ✅ Clean up subject if no other notes use it
+    if (note.subject) {
+      const otherNotesCount = await Note.countDocuments({
+        subject: note.subject._id,
+        _id:     { $ne: note._id },
+      })
+      if (otherNotesCount === 0) {
+        await Subject.deleteOne({ _id: note.subject._id })
+        console.log('🗑️ Unused subject deleted:', note.subject.name)
+      }
+    }
+
+    // ✅ Decrement user uploads count
+    await User.findByIdAndUpdate(note.uploadedBy, {
+      $inc: { totalUploads: -1 }
+    })
+
+    // ✅ Delete note from DB completely
+    await note.deleteOne()
+
+    console.log('✅ Note deleted by admin:', note.title)
+
+    return res.status(200).json({
+      success: true,
+      message: 'Note deleted successfully',
+    })
+  } catch (error) {
+    console.error('Delete note admin error:', error.message)
+    return res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
 
 // PUT /api/admin/users/:id/disable
 const disableUser = async (req, res) => {
@@ -339,6 +398,7 @@ module.exports = {
   getAllNotes,
   getAllUsers,
   deleteUser,
+  deleteNoteAdmin,
   disableUser,
   enableUser,
   getStats,

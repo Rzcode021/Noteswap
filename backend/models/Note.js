@@ -38,6 +38,11 @@ const noteSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // Add after fileSize field
+originalName: {
+  type: String,
+  default: null,
+},
     pageCount: {
       type: Number,
       default: null,

@@ -149,6 +149,7 @@ const uploadNote = async (req, res) => {
       filePublicId,
       fileType,
        fileSize:     req.file.bytes || req.file.size || 0,
+        originalName: req.file.originalname,
       subject:      subjectDoc._id,
       unit:         unit?.trim() || 'General',
       semester,
@@ -235,28 +236,38 @@ const likeNote = async (req, res) => {
 // Increment download count — protected
 const downloadNote = async (req, res) => {
   try {
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findById(req.params.id)
     if (!note) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: 'Note not found' })
     }
 
-    // increment note download count
-    note.downloadsCount += 1;
-    await note.save();
+    note.downloadsCount += 1
+    await note.save()
 
-    // increment uploader's total downloads
-    await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } });
+    await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
+
+    // ✅ Build proper download URL with filename
+    const originalName = note.originalName || `${note.title}.${note.fileType}`
+    
+    // ✅ For Cloudinary — add fl_attachment to force download with proper filename
+    let downloadUrl = note.fileUrl
+    if (note.fileUrl.includes('cloudinary.com')) {
+      // Insert fl_attachment:filename into the URL
+      const safeName = encodeURIComponent(originalName.replace(/[^a-zA-Z0-9._-]/g, '_'))
+      downloadUrl = note.fileUrl.replace('/upload/', `/upload/fl_attachment:${safeName}/`)
+    }
 
     return res.status(200).json({
       success: true,
       message: 'Download count updated',
-      fileUrl: note.fileUrl,
+      fileUrl: downloadUrl,
+      originalName,
       downloadsCount: note.downloadsCount,
-    });
+    })
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    return res.status(500).json({ message: 'Server error', error: error.message })
   }
-};
+}
 
 // GET /api/notes/my
 // Get logged in user's uploaded notes — protected

@@ -10,28 +10,26 @@ const generateSlug = (name) => {
 // Get all active subjects — public
 const getSubjects = async (req, res) => {
   try {
-    // Count only approved notes per subject
-    const subjects = await Subject.find({})
-      .sort({ name: 1 })
+    const Note = require('../models/Note')
+    const subjects = await Subject.find({}).sort({ name: 1 })
 
-    // Get approved note counts for each subject
     const subjectsWithCount = await Promise.all(
       subjects.map(async (subject) => {
         const count = await Note.countDocuments({
           subject: subject._id,
-          status: 'approved'
+          status: 'approved',
         })
-        return {
-          ...subject.toObject(),
-          notesCount: count
-        }
+        return { ...subject.toObject(), notesCount: count }
       })
     )
 
+    // ✅ Only return subjects with at least 1 approved note
+    const filtered = subjectsWithCount.filter(s => s.notesCount > 0)
+
     return res.status(200).json({
       success: true,
-      count: subjectsWithCount.length,
-      data: subjectsWithCount,
+      count: filtered.length,
+      data: filtered,
     })
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error: error.message })

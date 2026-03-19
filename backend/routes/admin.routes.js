@@ -7,6 +7,7 @@ const {
   getAllNotes,
   getAllUsers,
   deleteUser,
+  deleteNoteAdmin,
   disableUser,
   enableUser,
   getStats,
@@ -23,6 +24,7 @@ router.get('/pending',            getPendingNotes);
 router.get('/notes',              getAllNotes);
 router.get('/users',              getAllUsers);
 router.delete('/users/:id',       deleteUser);
+router.delete('/notes/:id', verifyFirebaseToken, adminMiddleware, deleteNoteAdmin)
 router.put('/users/:id/disable',  disableUser);
 router.put('/users/:id/enable',   enableUser);
 

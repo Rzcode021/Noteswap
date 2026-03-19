@@ -447,35 +447,43 @@ export default function HomePage() {
             + View all subjects
           </div>
 
-          <div
-            style={{
-              marginTop: "auto",
-              paddingTop: "1rem",
-              borderTop: "1.5px solid #F0F1F8",
-            }}
-          >
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                padding: "9px 12px",
-                borderRadius: "12px",
-                border: "var(--clay-border)",
-                background: "#FEF2F2",
-                color: "#991B1B",
-                fontFamily: "Nunito, sans-serif",
-                fontSize: "0.82rem",
-                fontWeight: 800,
-                cursor: "pointer",
-                boxShadow: "0 2px 0 #FECACA",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              🚪 Logout
-            </button>
-          </div>
+          {/* Logout */}
+<div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1.5px solid #F0F1F8' }}>
+
+  {/* ✅ Admin Panel — only visible to admin users */}
+  {user?.role === 'admin' && (
+    <Link href="/admin" style={{ textDecoration: 'none' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '10px',
+        padding: '9px 12px', borderRadius: '12px',
+        cursor: 'pointer', fontSize: '0.84rem', fontWeight: 700,
+        color: 'var(--orange-dark)',
+        background: 'var(--orange-light)',
+        border: 'var(--clay-border)',
+        boxShadow: '0 3px 0 rgba(0,0,0,0.04)',
+        marginBottom: '8px',
+      }}>
+        <span>⚙️</span>
+        Admin Panel
+      </div>
+    </Link>
+  )}
+
+  {/* Logout button */}
+  <button
+    onClick={handleLogout}
+    style={{
+      width: '100%', padding: '9px 12px', borderRadius: '12px',
+      border: 'var(--clay-border)', background: '#FEF2F2',
+      color: '#991B1B', fontFamily: 'Nunito, sans-serif',
+      fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer',
+      boxShadow: '0 2px 0 #FECACA',
+      display: 'flex', alignItems: 'center', gap: '8px',
+    }}
+  >
+    🚪 Logout
+  </button>
+</div>
         </aside>
 
         {/* MAIN CONTENT */}
