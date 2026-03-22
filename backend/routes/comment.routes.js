@@ -10,7 +10,7 @@ const {
 const verifyFirebaseToken = require('../middleware/verifyFirebaseToken');
 
 // get comments for a note — protected
-router.get('/:noteId',       verifyFirebaseToken, getComments);
+router.get('/:noteId',   getComments);
 
 // add comment to a note — protected
 router.post('/:noteId',      verifyFirebaseToken, addComment);

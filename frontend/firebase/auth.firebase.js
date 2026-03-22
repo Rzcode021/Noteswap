@@ -7,6 +7,7 @@ import {
   RecaptchaVerifier,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'firebase/auth'
 import { auth } from './firebase.config'
 
@@ -18,5 +19,10 @@ export const signupWithEmail = (email, password) => createUserWithEmailAndPasswo
 export const loginWithGoogle = ()                => signInWithPopup(auth, googleProvider)
 export const logout          = ()                => signOut(auth)
 export const onAuthChange    = (cb)              => onAuthStateChanged(auth, cb)
+export const loginWithPhone  = (phoneNumber, appVerifier) => signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+export const setupRecaptcha   = (containerId)    => new RecaptchaVerifier(containerId, {}, auth)
+export const resetPassword = (email) =>
+  sendPasswordResetEmail(auth, email)
+
 
 export { auth }

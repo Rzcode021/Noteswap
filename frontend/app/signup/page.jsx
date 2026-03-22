@@ -41,18 +41,29 @@ export default function SignupPage() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
-  const handleSignup = async (e) => {
-    e.preventDefault()
-    setError('')
-    setSubmitting(true)
-    try {
-      await signupWithEmail(form.email, form.password)
-      // ✅ useEffect above handles redirect
-    } catch (err) {
-      setError(getFriendlyError(err.code))
-      setSubmitting(false)
-    }
+ const handleSignup = async (e) => {
+  e.preventDefault()
+  setError('')
+  setSubmitting(true)
+  try {
+    // ✅ Store extra data before Firebase signup
+    localStorage.setItem('pendingProfileData', JSON.stringify({
+      phone:    form.phone    || '',
+      college:  form.college  || '',
+      semester: form.semester || '',
+      year:     form.year     || '',
+    }))
+
+    await signupWithEmail(form.email, form.password)
+    // AuthContext will handle sync and redirect
+
+  } catch (err) {
+    console.error('Signup error:', err)
+    localStorage.removeItem('pendingProfileData') // cleanup on error
+    setError(getFriendlyError(err.code))
+    setSubmitting(false)
   }
+}
 
   const handleGoogleSignup = async () => {
     setError('')
@@ -298,14 +309,14 @@ export default function SignupPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
             }}>🌐 Google</button>
             <Link href="/login/otp" style={{ flex: 1, textDecoration: 'none' }}>
-              <button style={{
+              <button disabled style={{
                 width: '100%', padding: '10px', borderRadius: '12px',
                 border: '2px solid #E5E7EB', background: 'white',
                 fontFamily: 'Nunito, sans-serif', fontSize: '0.82rem',
                 fontWeight: 800, color: 'var(--dark)', cursor: 'pointer',
                 boxShadow: '0 3px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-              }}>📱 OTP</button>
+              }}>📱 OTP (SOON) </button>
             </Link>
           </div>
 

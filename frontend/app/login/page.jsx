@@ -241,9 +241,9 @@ export default function LoginPage() {
               />
             </div>
             <div style={{ textAlign: 'right', marginBottom: '1.2rem' }}>
-              <a href="#" style={{ fontSize: '0.78rem', color: 'var(--orange)', fontWeight: 800, textDecoration: 'none' }}>
-                Forgot password?
-              </a>
+              <Link href="/login/forgot-password" style={{ fontSize: '0.78rem', color: 'var(--orange)', fontWeight: 800, textDecoration: 'none' }}>
+  Forgot password?
+</Link>
             </div>
             <button type="submit" disabled={submitting} style={{
               width: '100%', padding: '13px', borderRadius: '50px', border: 'none',
@@ -278,14 +278,14 @@ export default function LoginPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
             }}>🌐 Google</button>
             <Link href="/login/otp" style={{ flex: 1, textDecoration: 'none' }}>
-              <button style={{
+              <button disabled style={{
                 width: '100%', padding: '10px', borderRadius: '12px',
                 border: '2px solid #E5E7EB', background: 'white',
                 fontFamily: 'Nunito, sans-serif', fontSize: '0.82rem',
                 fontWeight: 800, color: 'var(--dark)', cursor: 'pointer',
                 boxShadow: '0 3px 0 rgba(0,0,0,0.05)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-              }}>📱 OTP</button>
+              }}>📱 OTP (SOON) </button>
             </Link>
           </div>
 

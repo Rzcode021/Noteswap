@@ -17,17 +17,27 @@ export function AuthProvider({ children }) {
 
       if (fbUser) {
         try {
-          const res = await syncUser()
+          // ✅ Check for pending profile data from signup form
+          const pendingData = localStorage.getItem('pendingProfileData')
+          const extraData   = pendingData ? JSON.parse(pendingData) : {}
+
+          const res = await syncUser(extraData)
           setUser(res.data.data)
+
+          // ✅ Clear pending data after successful sync
+          if (pendingData) localStorage.removeItem('pendingProfileData')
+
         } catch (err) {
           console.error('🔥 syncUser failed:', err.message)
-          // ✅ Fallback — use Firebase user directly so login still works
+          // Fallback to Firebase user
           setUser({
             _id:   fbUser.uid,
             name:  fbUser.displayName || fbUser.email?.split('@')[0] || 'Student',
             email: fbUser.email,
             photo: fbUser.photoURL,
           })
+          // Still clear pending data
+          localStorage.removeItem('pendingProfileData')
         }
       } else {
         setUser(null)
