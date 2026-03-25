@@ -52,6 +52,8 @@ body {
   font-family: 'Nunito', sans-serif;
   background: var(--bg);
   color: var(--dark);
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* ====== CLAY EFFECTS ====== */
