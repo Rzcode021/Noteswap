@@ -14,23 +14,13 @@ export default function LoginPage() {
   const [submitting, setSubmitting]    = useState(false)
   const [error, setError]              = useState('')
 
-  console.log('🔐 Login page render — authLoading:', authLoading, 'user:', user?.email || 'null')
-
   useEffect(() => {
-    console.log('🔐 Login useEffect — authLoading:', authLoading, 'user:', user?.email || 'null')
-    if (!authLoading && user) {
-      console.log('🔐 Redirecting to /home...')
-      router.replace('/home')
-    }
+    if (!authLoading && user) router.replace('/home')
   }, [user, authLoading])
 
   if (authLoading) {
     return (
-      <div style={{
-        minHeight: '100vh', background: 'var(--bg)',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'center', flexDirection: 'column', gap: '1rem',
-      }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
         <div className="spinner" />
         <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '0.9rem' }}>Loading...</p>
       </div>
@@ -42,12 +32,8 @@ export default function LoginPage() {
     setError('')
     setSubmitting(true)
     try {
-      console.log('🔐 Attempting email login...')
       await loginWithEmail(email, password)
-      console.log('🔐 Firebase login success — waiting for AuthContext...')
-      // Do NOT push here — useEffect handles redirect
     } catch (err) {
-      console.error('🔐 Login error:', err.code, err.message)
       setError(getFriendlyError(err.code))
       setSubmitting(false)
     }
@@ -57,11 +43,8 @@ export default function LoginPage() {
     setError('')
     setSubmitting(true)
     try {
-      console.log('🔐 Attempting Google login...')
       await loginWithGoogle()
-      console.log('🔐 Google popup closed — waiting for AuthContext...')
     } catch (err) {
-      console.error('🔐 Google error:', err.code, err.message)
       setError(getFriendlyError(err.code))
       setSubmitting(false)
     }
@@ -84,15 +67,67 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
+      {/* ===== RESPONSIVE STYLES ===== */}
+      <style>{`
+        .login-nav {
+          padding: 1rem 2rem;
+        }
+        .login-nav-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: white;
+          border-radius: 60px;
+          padding: 0.7rem 1.5rem;
+          border: var(--clay-border);
+          box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .login-content {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 3rem;
+          align-items: center;
+          min-height: calc(100vh - 100px);
+        }
+        .login-left-panel {
+          display: block;
+        }
+        .login-form-card {
+          background: white;
+          border-radius: 28px;
+          padding: 2.5rem;
+        }
+        @media (max-width: 768px) {
+          .login-nav {
+            padding: 0.8rem 1rem;
+          }
+          .login-nav-inner {
+            padding: 0.6rem 1rem;
+            border-radius: 50px;
+          }
+          .login-content {
+            grid-template-columns: 1fr;
+            gap: 0;
+            padding: 1rem;
+            min-height: unset;
+          }
+          .login-left-panel {
+            display: none;
+          }
+          .login-form-card {
+            padding: 1.8rem 1.4rem;
+          }
+        }
+      `}</style>
+
       {/* NAV */}
-      <div style={{ padding: '1rem 2rem' }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'white', borderRadius: '60px', padding: '0.7rem 1.5rem',
-          border: 'var(--clay-border)',
-          boxShadow: '0 4px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)',
-        }}>
+      <div className="login-nav">
+        <div className="login-nav-inner">
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
               width: '34px', height: '34px', borderRadius: '10px',
@@ -106,85 +141,82 @@ export default function LoginPage() {
           </Link>
           <Link href="/">
             <button className="btn-outline" style={{ padding: '8px 18px', fontSize: '0.82rem' }}>
-              ← Back to Home
+              ← Back
             </button>
           </Link>
         </div>
       </div>
 
       {/* CONTENT */}
-      <div style={{
-        maxWidth: '1200px', margin: '0 auto', padding: '2rem',
-        display: 'grid', gridTemplateColumns: '1fr 1fr',
-        gap: '3rem', alignItems: 'center',
-        minHeight: 'calc(100vh - 100px)',
-      }}>
+      <div className="login-content">
 
-        {/* LEFT PANEL */}
-        <div style={{
-          background: 'var(--orange)', borderRadius: '28px', padding: '2.5rem',
-          border: 'var(--clay-border)',
-          boxShadow: '0 10px 0 var(--orange-dark), 0 20px 48px rgba(245,166,35,0.3)',
-          position: 'relative', overflow: 'hidden',
-          animation: 'floatCard 4s ease-in-out infinite',
-        }}>
-          {[
-            { w: 180, h: 180, top: '-60px', right: '-40px' },
-            { w: 120, h: 120, bottom: '-30px', left: '-20px' },
-            { w: 80,  h: 80,  top: '40%',   right: '20px'  },
-          ].map((b, i) => (
-            <div key={i} style={{
-              position: 'absolute', borderRadius: '50%',
-              background: 'rgba(255,255,255,0.12)',
-              width: b.w, height: b.h,
-              top: b.top, right: b.right,
-              bottom: b.bottom, left: b.left,
-            }} />
-          ))}
+        {/* LEFT PANEL — hidden on mobile */}
+        <div className="login-left-panel">
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            marginBottom: '2rem', position: 'relative', zIndex: 1,
-            fontFamily: 'Outfit, sans-serif', fontSize: '1.4rem', fontWeight: 900, color: 'white',
+            background: 'var(--orange)', borderRadius: '28px', padding: '2.5rem',
+            border: 'var(--clay-border)',
+            boxShadow: '0 10px 0 var(--orange-dark), 0 20px 48px rgba(245,166,35,0.3)',
+            position: 'relative', overflow: 'hidden',
+            animation: 'floatCard 4s ease-in-out infinite',
           }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '10px', background: 'white',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '0.9rem', boxShadow: '0 3px 0 rgba(0,0,0,0.1)',
-            }}>📚</div>
-            Note<span style={{ color: 'rgba(255,255,255,0.8)' }}>Swap</span>
-          </div>
-          <h2 style={{
-            fontFamily: 'Outfit, sans-serif', fontSize: '2rem', fontWeight: 900,
-            color: 'white', lineHeight: 1.2, marginBottom: '0.8rem',
-            position: 'relative', zIndex: 1, letterSpacing: '-0.5px',
-          }}>
-            Welcome back,<br />student! 👋
-          </h2>
-          <p style={{
-            fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)',
-            lineHeight: 1.7, marginBottom: '2rem', fontWeight: 600,
-            position: 'relative', zIndex: 1,
-          }}>
-            Login to access thousands of verified notes organised by subject, unit and semester.
-          </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
-            {['📚 12K+ Notes', '🎓 200+ Subjects', '🔒 Free Forever'].map(p => (
-              <div key={p} style={{
-                background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white', fontSize: '0.75rem', fontWeight: 800,
-                padding: '6px 14px', borderRadius: '50px',
-              }}>{p}</div>
+            {[
+              { w: 180, h: 180, top: '-60px',  right: '-40px' },
+              { w: 120, h: 120, bottom: '-30px', left: '-20px' },
+              { w: 80,  h: 80,  top: '40%',    right: '20px'  },
+            ].map((b, i) => (
+              <div key={i} style={{
+                position: 'absolute', borderRadius: '50%',
+                background: 'rgba(255,255,255,0.12)',
+                width: b.w, height: b.h,
+                top: b.top, right: b.right,
+                bottom: b.bottom, left: b.left,
+              }} />
             ))}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              marginBottom: '2rem', position: 'relative', zIndex: 1,
+              fontFamily: 'Outfit, sans-serif', fontSize: '1.4rem', fontWeight: 900, color: 'white',
+            }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '10px', background: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.9rem', boxShadow: '0 3px 0 rgba(0,0,0,0.1)',
+              }}>📚</div>
+              Note<span style={{ color: 'rgba(255,255,255,0.8)' }}>Swap</span>
+            </div>
+            <h2 style={{
+              fontFamily: 'Outfit, sans-serif', fontSize: '2rem', fontWeight: 900,
+              color: 'white', lineHeight: 1.2, marginBottom: '0.8rem',
+              position: 'relative', zIndex: 1, letterSpacing: '-0.5px',
+            }}>
+              Welcome back,<br />student! 👋
+            </h2>
+            <p style={{
+              fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)',
+              lineHeight: 1.7, marginBottom: '2rem', fontWeight: 600,
+              position: 'relative', zIndex: 1,
+            }}>
+              Login to access thousands of verified notes organised by subject, unit and semester.
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+              {['📚 12K+ Notes', '🎓 200+ Subjects', '🔒 Free Forever'].map(p => (
+                <div key={p} style={{
+                  background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)',
+                  color: 'white', fontSize: '0.75rem', fontWeight: 800,
+                  padding: '6px 14px', borderRadius: '50px',
+                }}>{p}</div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* RIGHT — Form */}
-        <div className="clay" style={{ background: 'white', borderRadius: '28px', padding: '2.5rem' }}>
+        <div className="clay login-form-card">
 
           {/* Tabs */}
           <div style={{
             display: 'flex', background: 'var(--bg)', borderRadius: '14px',
-            padding: '4px', marginBottom: '2rem', border: 'var(--clay-border)',
+            padding: '4px', marginBottom: '1.8rem', border: 'var(--clay-border)',
             boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.04)',
           }}>
             <button style={{
@@ -205,7 +237,7 @@ export default function LoginPage() {
           <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 900, color: 'var(--dark)', marginBottom: '0.3rem' }}>
             Welcome back
           </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: '1.8rem', fontWeight: 600 }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: '1.5rem', fontWeight: 600 }}>
             Login to access your notes and bookmarks
           </p>
 
@@ -227,24 +259,29 @@ export default function LoginPage() {
 
           <form onSubmit={handleEmailLogin}>
             <div style={{ marginBottom: '1rem' }}>
-              <label className="field-label">Email address <span>*</span></label>
+              <label className="field-label">Email address <span style={{ color: 'var(--orange)' }}>*</span></label>
               <input
-                type="email" className="input-clay" placeholder="you@college.edu"
+                type="email" className="input-clay"
+                placeholder="you@college.edu"
                 value={email} onChange={e => setEmail(e.target.value)} required
               />
             </div>
             <div style={{ marginBottom: '0.5rem' }}>
-              <label className="field-label">Password <span>*</span></label>
+              <label className="field-label">Password <span style={{ color: 'var(--orange)' }}>*</span></label>
               <input
-                type="password" className="input-clay" placeholder="Enter your password"
+                type="password" className="input-clay"
+                placeholder="Enter your password"
                 value={password} onChange={e => setPassword(e.target.value)} required
               />
             </div>
+
+            {/* Forgot password */}
             <div style={{ textAlign: 'right', marginBottom: '1.2rem' }}>
               <Link href="/login/forgot-password" style={{ fontSize: '0.78rem', color: 'var(--orange)', fontWeight: 800, textDecoration: 'none' }}>
-  Forgot password?
-</Link>
+                Forgot password?
+              </Link>
             </div>
+
             <button type="submit" disabled={submitting} style={{
               width: '100%', padding: '13px', borderRadius: '50px', border: 'none',
               background: submitting ? '#ccc' : 'var(--orange)',
@@ -255,20 +292,22 @@ export default function LoginPage() {
               boxShadow: submitting ? 'none' : '0 6px 20px rgba(245,166,35,0.35)',
               transition: 'all 0.2s', marginBottom: '1.2rem',
             }}>
-              {submitting ? '⏳ Logging in...' : 'Login to NoteSwap'}
+              {submitting ? '⏳ Logging in...' : 'Login to NoteSwap →'}
             </button>
           </form>
 
+          {/* Divider */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '10px',
-            fontSize: '0.78rem', color: 'var(--muted)', fontWeight: 700, marginBottom: '1.2rem',
+            fontSize: '0.78rem', color: 'var(--muted)', fontWeight: 700, marginBottom: '1rem',
           }}>
             <div style={{ flex: 1, height: '1.5px', background: '#E5E7EB' }} />
             or continue with
             <div style={{ flex: 1, height: '1.5px', background: '#E5E7EB' }} />
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem' }}>
+          {/* Social buttons */}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '1.2rem' }}>
             <button onClick={handleGoogleLogin} disabled={submitting} style={{
               flex: 1, padding: '10px', borderRadius: '12px',
               border: '2px solid #E5E7EB', background: 'white',
@@ -277,15 +316,19 @@ export default function LoginPage() {
               boxShadow: '0 3px 0 rgba(0,0,0,0.05)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
             }}>🌐 Google</button>
-            <Link href="/login/otp" style={{ flex: 1, textDecoration: 'none' }}>
-              <button disabled style={{
-                width: '100%', padding: '10px', borderRadius: '12px',
-                border: '2px solid #E5E7EB', background: 'white',
-                fontFamily: 'Nunito, sans-serif', fontSize: '0.82rem',
-                fontWeight: 800, color: 'var(--dark)', cursor: 'pointer',
-                boxShadow: '0 3px 0 rgba(0,0,0,0.05)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-              }}>📱 OTP (SOON) </button>
+            <button disabled style={{
+              flex: 1, padding: '10px', borderRadius: '12px',
+              border: '2px solid #E5E7EB', background: '#FAFAFA',
+              fontFamily: 'Nunito, sans-serif', fontSize: '0.82rem',
+              fontWeight: 800, color: 'var(--muted)', cursor: 'not-allowed',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
+            }}>📱 OTP (Soon)</button>
+          </div>
+
+          {/* OTP link */}
+          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            <Link href="/login/otp" style={{ fontSize: '0.78rem', color: 'var(--mid)', fontWeight: 700, textDecoration: 'none' }}>
+              Login with phone number instead →
             </Link>
           </div>
 

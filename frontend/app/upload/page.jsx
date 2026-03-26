@@ -129,7 +129,7 @@ export default function UploadPage() {
       formData.append('subject', customSubject ? (form.subjectCustom || '').trim() : form.subject)
      formData.append('unit', form.unit || 'General')
       formData.append('semester', form.semester)
-     
+      
 formData.append('year', form.year || 'Not specified')
       formData.append('college', form.college)
       formData.append('tags', form.tags)
@@ -197,12 +197,18 @@ const checklist = [
   }
 
   // Success screen
+  // Success screen
   if (success) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
         <div className="clay" style={{
-          background: 'white', borderRadius: '28px', padding: '3rem',
-          textAlign: 'center', maxWidth: '480px', width: '100%', margin: '2rem',
+          background: 'white', 
+          // clamp() automatically scales these down on smaller screens!
+          borderRadius: 'clamp(20px, 5vw, 28px)', 
+          padding: 'clamp(1.5rem, 6vw, 3rem)',
+          textAlign: 'center', 
+          maxWidth: '480px', 
+          width: '100%',
         }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
           <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 900, color: 'var(--dark)', marginBottom: '0.5rem' }}>
@@ -223,16 +229,22 @@ const checklist = [
               Admin will review your notes for quality and accuracy. You'll be able to see the status in your profile.
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <Link href="/home">
-              <button className="btn-orange" style={{ padding: '11px 24px' }}>
+          
+          {/* Automatically stacks buttons on mobile and sits them side-by-side on desktop */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
+            gap: '10px' 
+          }}>
+            <Link href="/home" style={{ textDecoration: 'none' }}>
+              <button className="btn-orange" style={{ width: '100%', padding: '11px 24px', justifyContent: 'center' }}>
                 🏠 Go to Home
               </button>
             </Link>
             <button
               onClick={() => { setSuccess(false); setSelectedFile(null); setForm({ title: '', description: '', subject: '', unit: '', semester: '', year: '', college: '', tags: '' }); setUploadProgress(0) }}
               className="btn-white"
-              style={{ padding: '11px 24px' }}
+              style={{ width: '100%', padding: '11px 24px', justifyContent: 'center' }}
             >
               + Upload More
             </button>
@@ -245,14 +257,59 @@ const checklist = [
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
+      {/* ===== RESPONSIVE STYLES ===== */}
+      <style>{`
+        .upload-nav {
+          background: white; border-bottom: 2px solid rgba(255,255,255,0.8);
+          padding: 0 2rem; display: flex; align-items: center;
+          justify-content: space-between; height: 60px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+          position: sticky; top: 0; z-index: 100;
+        }
+        .upload-breadcrumb {
+          display: flex; align-items: center; gap: 8px; 
+          font-size: 0.85rem; color: var(--muted); font-weight: 700;
+        }
+        .upload-wrapper {
+          max-width: 1000px; margin: 0 auto; padding: 2rem;
+        }
+        .upload-layout {
+          display: grid; grid-template-columns: 1fr 300px; 
+          gap: 1.5rem; align-items: start;
+        }
+        .form-grid-2 {
+          display: grid; grid-template-columns: 1fr 1fr; 
+          gap: 10px; margin-bottom: 1rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+          .upload-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .upload-nav {
+            padding: 0 1rem;
+          }
+          .upload-breadcrumb {
+            display: none;
+          }
+          .upload-wrapper {
+            padding: 1.5rem 1rem;
+          }
+          .form-grid-2 {
+            grid-template-columns: 1fr;
+          }
+          .hide-on-mobile {
+            display: none !important;
+          }
+        }
+      `}</style>
+
       {/* NAVBAR */}
-      <nav style={{
-        background: 'white', borderBottom: '2px solid rgba(255,255,255,0.8)',
-        padding: '0 2rem', display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', height: '60px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
-        position: 'sticky', top: 0, zIndex: 100,
-      }}>
+      <nav className="upload-nav">
         <Link href="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
             width: '32px', height: '32px', borderRadius: '9px',
@@ -266,7 +323,7 @@ const checklist = [
         </Link>
 
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--muted)', fontWeight: 700 }}>
+        <div className="upload-breadcrumb">
           <Link href="/home" style={{ textDecoration: 'none', color: 'var(--muted)' }}>Home</Link>
           <span>›</span>
           <span style={{ color: 'var(--dark)' }}>Upload Notes</span>
@@ -275,7 +332,7 @@ const checklist = [
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link href="/home">
             <button className="btn-outline" style={{ padding: '8px 18px', fontSize: '0.82rem' }}>
-              ← Back to Home
+              ← Back<span className="hide-on-mobile"> to Home</span>
             </button>
           </Link>
           <Link href="/profile">
@@ -291,7 +348,7 @@ const checklist = [
       </nav>
 
       {/* PAGE */}
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
+      <div className="upload-wrapper">
 
         {/* Page Header */}
         <div style={{ marginBottom: '2rem' }}>
@@ -303,7 +360,7 @@ const checklist = [
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="upload-layout">
 
           {/* LEFT — Main Form */}
           <div>
@@ -384,8 +441,8 @@ const checklist = [
                       fontSize: '1.2rem', minWidth: '42px',
                       border: 'var(--clay-border)', boxShadow: 'var(--clay-shadow-sm)',
                     }}>{getFileIcon(selectedFile)}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--dark)', marginBottom: '2px' }}>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--dark)', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {selectedFile.name}
                       </div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -480,7 +537,7 @@ const checklist = [
                 <div style={{ flex: 1, height: '1.5px', background: '#E5E7EB' }} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
+              <div className="form-grid-2">
   <div>
     <label className="field-label">Subject <span style={{ color: 'var(--orange)' }}>*</span></label>
     {!customSubject ? (
@@ -503,7 +560,7 @@ const checklist = [
           placeholder="Type subject name..."
           value={form.subjectCustom || ''}
           onChange={e => setForm({ ...form, subjectCustom: e.target.value })}
-          style={{ flex: 1 }}
+          style={{ flex: 1, minWidth: '0' }}
         />
         <button
           type="button"
@@ -551,7 +608,7 @@ const checklist = [
           placeholder="e.g. Unit 2 — SDLC Models"
           value={form.unit === '__custom__' ? '' : form.unit}
           onChange={e => setForm({ ...form, unit: e.target.value })}
-          style={{ flex: 1 }}
+          style={{ flex: 1, minWidth: '0' }}
         />
         <button
           type="button"
@@ -577,7 +634,7 @@ const checklist = [
   </div>
 </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
+              <div className="form-grid-2">
                 <div>
                   <label className="field-label">Semester <span style={{ color: 'var(--orange)' }}>*</span></label>
                   <select

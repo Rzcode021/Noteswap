@@ -1,17 +1,17 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../context/AuthContext'
 import { getNoteById, likeNote, downloadNote } from '../../../services/note.service'
 import { toggleBookmark } from '../../../services/user.service'
 import { getComments, addComment, deleteComment, likeComment } from '../../../services/comment.service'
-
+import { use } from 'react'
 export default function NoteDetailPage({ params }) {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
-  const { id } = use(params)
+  const { id } =use(params)
 
   const [note, setNote]               = useState(null)
   const [comments, setComments]       = useState([])
@@ -61,31 +61,19 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
- const handleLike = async () => {
-  if (actionLoading) return
-
-  setActionLoading('like')
-
-  // ✅ Optimistic UI
-  const prevLiked = liked
-  const prevCount = likesCount
-
-  const newLiked = !liked
-  setLiked(newLiked)
-  setLikesCount(prev => newLiked ? prev + 1 : prev - 1)
-
-  try {
-    await likeNote(id)
-  } catch (err) {
-    console.error('Like error:', err)
-
-    // ❗ rollback
-    setLiked(prevLiked)
-    setLikesCount(prevCount)
-  } finally {
-    setActionLoading('')
+  const handleLike = async () => {
+    if (actionLoading) return
+    setActionLoading('like')
+    try {
+      const res = await likeNote(id)
+      setLiked(res.data.liked)
+      setLikesCount(res.data.likesCount)
+    } catch (err) {
+      console.error('Like error:', err)
+    } finally {
+      setActionLoading('')
+    }
   }
-}
 
   const handleBookmark = async () => {
     if (actionLoading) return
@@ -127,40 +115,19 @@ export default function NoteDetailPage({ params }) {
   }
 
   const handleAddComment = async (e) => {
-  e.preventDefault()
-  if (!commentText.trim()) return
-
-  const tempComment = {
-    _id: Date.now(),
-    text: commentText,
-    user: { name: user.name, _id: user._id },
-    likesCount: 0,
-    createdAt: new Date()
+    e.preventDefault()
+    if (!commentText.trim()) return
+    setCommentLoading(true)
+    try {
+      await addComment(id, commentText.trim())
+      setCommentText('')
+      fetchComments()
+    } catch (err) {
+      console.error('Add comment error:', err)
+    } finally {
+      setCommentLoading(false)
+    }
   }
-
-  // ✅ instant UI update
-  setComments(prev => [tempComment, ...prev])
-  setCommentText('')
-  setCommentLoading(true)
-
-  try {
-    const res = await addComment(id, tempComment.text)
-
-    // replace temp with real
-    setComments(prev =>
-      prev.map(c => c._id === tempComment._id ? res.data.data : c)
-    )
-
-  } catch (err) {
-    console.error('Add comment error:', err)
-
-    // rollback
-    setComments(prev => prev.filter(c => c._id !== tempComment._id))
-  } finally {
-    setCommentLoading(false)
-  }
-}
-
 
   const handleDeleteComment = async (commentId) => {
     try {
@@ -171,32 +138,14 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
- const handleLikeComment = async (commentId) => {
-
-  // ✅ instant UI update
-  setComments(prev =>
-    prev.map(c =>
-      c._id === commentId
-        ? { ...c, likesCount: (c.likesCount || 0) + 1 }
-        : c
-    )
-  )
-
-  try {
-    await likeComment(commentId)
-  } catch (err) {
-    console.error('Like comment error:', err)
-
-    // rollback
-    setComments(prev =>
-      prev.map(c =>
-        c._id === commentId
-          ? { ...c, likesCount: (c.likesCount || 1) - 1 }
-          : c
-      )
-    )
+  const handleLikeComment = async (commentId) => {
+    try {
+      await likeComment(commentId)
+      fetchComments()
+    } catch (err) {
+      console.error('Like comment error:', err)
+    }
   }
-}
 
   const getFileIcon = (type) => {
     if (type === 'pdf')   return '📕'
@@ -248,91 +197,14 @@ export default function NoteDetailPage({ params }) {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
-      {/* ===== RESPONSIVE STYLES ===== */}
-      <style>{`
-        .detail-nav {
-          background: white; border-bottom: 2px solid rgba(255,255,255,0.8);
-          padding: 0 2rem; display: flex; align-items: center;
-          justify-content: space-between; height: 60px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-          position: sticky; top: 0; z-index: 100;
-        }
-        .detail-breadcrumb {
-          display: flex; align-items: center; gap: 6px; 
-          font-size: 0.82rem; color: var(--muted); font-weight: 700;
-        }
-        .detail-wrapper {
-          max-width: 1100px; margin: 0 auto; padding: 2rem; 
-          display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start;
-        }
-        .detail-sidebar {
-          position: sticky; top: 80px;
-        }
-        .uploader-layout {
-          display: flex; align-items: center; gap: 12px;
-          background: var(--orange-light); border-radius: 14px;
-          padding: 1rem 1.2rem; margin-bottom: 1.2rem;
-          border: 1.5px solid rgba(245,166,35,0.2);
-        }
-        .action-grid {
-          display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap;
-        }
-        .preview-inner {
-          background: white; border-radius: 16px;
-          padding: 3rem; text-align: center;
-          border: var(--clay-border); box-shadow: var(--clay-shadow-sm);
-        }
-        .preview-actions {
-          display: flex; gap: 10px; justify-content: center;
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 900px) {
-          .detail-wrapper {
-            grid-template-columns: 1fr;
-            padding: 1.5rem 1rem;
-          }
-          .detail-sidebar {
-            position: static;
-          }
-          .detail-breadcrumb {
-            display: none; 
-          }
-        }
-
-        @media (max-width: 600px) {
-          .detail-nav {
-            padding: 0 1rem;
-          }
-          .hide-on-mobile {
-            display: none !important;
-          }
-          .uploader-layout {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-          .action-grid {
-            flex-direction: column;
-          }
-          .action-grid > * {
-            width: 100%;
-            justify-content: center;
-          }
-          .preview-inner {
-            padding: 1.5rem;
-          }
-          .preview-actions {
-            flex-direction: column;
-          }
-          .preview-actions > * {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-      `}</style>
-
       {/* NAVBAR */}
-      <nav className="detail-nav">
+      <nav style={{
+        background: 'white', borderBottom: '2px solid rgba(255,255,255,0.8)',
+        padding: '0 2rem', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', height: '60px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
+        position: 'sticky', top: 0, zIndex: 100,
+      }}>
         <Link href="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
             width: '32px', height: '32px', borderRadius: '9px',
@@ -346,7 +218,7 @@ export default function NoteDetailPage({ params }) {
         </Link>
 
         {/* Breadcrumb */}
-        <div className="detail-breadcrumb">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: 'var(--muted)', fontWeight: 700 }}>
           <Link href="/home" style={{ textDecoration: 'none', color: 'var(--muted)' }}>Home</Link>
           <span>›</span>
           <span style={{ color: 'var(--mid)' }}>{note.subject?.name}</span>
@@ -358,7 +230,7 @@ export default function NoteDetailPage({ params }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link href="/upload">
             <button className="btn-orange" style={{ padding: '8px 18px', fontSize: '0.84rem' }}>
-              + Upload<span style={{ display: 'inline-block', marginLeft: '4px' }} className="hide-on-mobile">Notes</span>
+              + Upload Notes
             </button>
           </Link>
           <Link href="/profile">
@@ -374,7 +246,7 @@ export default function NoteDetailPage({ params }) {
       </nav>
 
       {/* PAGE CONTENT */}
-      <div className="detail-wrapper">
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.5rem', alignItems: 'start' }}>
 
         {/* LEFT — Main Content */}
         <div>
@@ -383,10 +255,10 @@ export default function NoteDetailPage({ params }) {
           <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap', marginBottom: '1rem' }}>
             {[
               { label: note.subject?.name, bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
-              { label: note.unit,          bg: 'var(--bg)',           color: 'var(--mid)'        },
-              { label: note.semester,      bg: 'var(--bg)',           color: 'var(--mid)'        },
+              { label: note.unit,          bg: 'var(--bg)',           color: 'var(--mid)'         },
+              { label: note.semester,      bg: 'var(--bg)',           color: 'var(--mid)'         },
               { label: '✅ Verified',      bg: 'var(--green-light)',  color: 'var(--green)'       },
-              { label: note.fileType?.toUpperCase(), bg: 'var(--bg)', color: 'var(--mid)'        },
+              { label: note.fileType?.toUpperCase(), bg: 'var(--bg)', color: 'var(--mid)'         },
             ].filter(t => t.label).map((t, i) => (
               <span key={i} style={{
                 fontSize: '0.72rem', fontWeight: 900, padding: '5px 14px',
@@ -431,26 +303,28 @@ export default function NoteDetailPage({ params }) {
           </div>
 
           {/* Uploader Card */}
-          <div className="uploader-layout">
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%' }}>
-              <div style={{
-                width: '44px', height: '44px', borderRadius: '50%',
-                background: 'var(--orange)', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800, color: 'white',
-                border: 'var(--clay-border)', boxShadow: '0 3px 0 var(--orange-dark)', minWidth: '44px',
-              }}>
-                {note.uploadedBy?.name?.charAt(0)?.toUpperCase() || 'U'}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            background: 'var(--orange-light)', borderRadius: '14px',
+            padding: '1rem 1.2rem', marginBottom: '1.2rem',
+            border: '1.5px solid rgba(245,166,35,0.2)',
+          }}>
+            <div style={{
+              width: '44px', height: '44px', borderRadius: '50%',
+              background: 'var(--orange)', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800, color: 'white',
+              border: 'var(--clay-border)', boxShadow: '0 3px 0 var(--orange-dark)', minWidth: '44px',
+            }}>
+              {note.uploadedBy?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.95rem', fontWeight: 900, color: 'var(--orange-dark)' }}>
+                {note.uploadedBy?.name}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.95rem', fontWeight: 900, color: 'var(--orange-dark)' }}>
-                  {note.uploadedBy?.name}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--mid)', fontWeight: 600 }}>
-                  {note.uploadedBy?.college} · {note.uploadedBy?.semester}
-                </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--mid)', fontWeight: 600 }}>
+                {note.uploadedBy?.college} · {note.uploadedBy?.semester}
               </div>
             </div>
-            
             <div style={{ display: 'flex', gap: '1.5rem' }}>
               {[
                 { val: note.uploadedBy?.totalUploads || 0, label: 'Notes' },
@@ -465,7 +339,7 @@ export default function NoteDetailPage({ params }) {
           </div>
 
           {/* Action Buttons */}
-          <div className="action-grid">
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             <button
               onClick={handleDownload}
               disabled={actionLoading === 'download'}
@@ -504,7 +378,8 @@ export default function NoteDetailPage({ params }) {
                 transition: 'all 0.2s',
               }}
             >{bookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}</button>
-            <a
+<a
+            
               href={`https://docs.google.com/viewer?url=${encodeURIComponent(note.fileUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -552,7 +427,11 @@ export default function NoteDetailPage({ params }) {
                   style={{ width: '100%', borderRadius: '12px', border: 'var(--clay-border)' }}
                 />
               ) : (
-                <div className="preview-inner">
+                <div style={{
+                  background: 'white', borderRadius: '16px',
+                  padding: '3rem', textAlign: 'center',
+                  border: 'var(--clay-border)', boxShadow: 'var(--clay-shadow-sm)',
+                }}>
                   <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
                     {getFileIcon(note.fileType)}
                   </div>
@@ -562,7 +441,7 @@ export default function NoteDetailPage({ params }) {
                   <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600, marginBottom: '1.5rem' }}>
                     {note.fileType?.toUpperCase()} · {formatFileSize(note.fileSize)}
                   </div>
-                  <div className="preview-actions">
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                     <button
                       onClick={handleDownload}
                       className="btn-orange"
@@ -578,7 +457,6 @@ export default function NoteDetailPage({ params }) {
                         fontFamily: 'Nunito, sans-serif', fontSize: '0.88rem', fontWeight: 700,
                         cursor: 'pointer', boxShadow: 'var(--clay-shadow-sm)',
                         color: 'var(--mid)', textDecoration: 'none',
-                        display: 'flex', justifyContent: 'center', alignItems: 'center',
                       }}
                     >👁 Preview online</a>
                   </div>
@@ -692,7 +570,7 @@ export default function NoteDetailPage({ params }) {
         </div>
 
         {/* RIGHT — Sidebar */}
-        <div className="detail-sidebar">
+        <div style={{ position: 'sticky', top: '80px' }}>
 
           {/* Note Details Card */}
           <div className="clay-sm" style={{ background: 'white', borderRadius: '18px', padding: '1.2rem', marginBottom: '1rem' }}>

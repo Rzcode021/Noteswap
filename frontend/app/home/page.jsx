@@ -18,6 +18,7 @@ export default function HomePage() {
   const [activeSection, setActiveSection] = useState("Home");
   const [search, setSearch] = useState("");
   const [notesLoading, setNotesLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false)
 
   // ✅ Handle auth redirect
   useEffect(() => {
@@ -228,21 +229,96 @@ export default function HomePage() {
               + Upload Notes
             </button>
           </Link>
-          <div
-            className="clay-circle"
-            style={{
-              width: "34px",
-              height: "34px",
-              background: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-          >
-            🔔
+         {/* ✅ Notification Bell with dropdown */}
+<div style={{ position: 'relative' }}>
+  <div
+    onClick={() => setShowNotifications(!showNotifications)}
+    className="clay-circle"
+    style={{
+      width: '34px', height: '34px', background: 'white',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: '14px', cursor: 'pointer', position: 'relative',
+    }}
+  >
+    🔔
+    {/* ✅ Red dot for unread */}
+    <div style={{
+      position: 'absolute', top: '4px', right: '4px',
+      width: '8px', height: '8px', borderRadius: '50%',
+      background: 'var(--pink)', border: '1.5px solid white',
+    }} />
+  </div>
+
+  {/* ✅ Dropdown */}
+  {showNotifications && (
+    <>
+      {/* Overlay to close */}
+      <div
+        style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+        onClick={() => setShowNotifications(false)}
+      />
+      <div style={{
+        position: 'absolute', top: '42px', right: 0,
+        background: 'white', borderRadius: '16px',
+        width: '300px', zIndex: 100,
+        border: 'var(--clay-border)',
+        boxShadow: '0 8px 0 rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.12)',
+        overflow: 'hidden',
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '0.9rem 1.1rem',
+          borderBottom: '2px solid var(--bg)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.88rem', fontWeight: 900, color: 'var(--dark)' }}>
+            🔔 Notifications
           </div>
+          <span style={{
+            background: 'var(--orange-light)', color: 'var(--orange-dark)',
+            fontSize: '0.62rem', fontWeight: 900,
+            padding: '2px 8px', borderRadius: '20px',
+          }}>New</span>
+        </div>
+
+        {/* Notification items */}
+        {[
+          { icon: '✅', title: 'Welcome to NoteSwap!',         desc: 'Start uploading and sharing your notes.',        time: 'Just now',  color: 'var(--green-light)'  },
+          { icon: '📚', title: 'New notes in your subjects',   desc: 'Check out the latest notes added today.',        time: '1h ago',    color: 'var(--orange-light)' },
+          { icon: '💡', title: 'Complete your profile',        desc: 'Add your college and semester to get better recommendations.', time: '2h ago', color: 'var(--teal-light)' },
+        ].map((n, i) => (
+          <div key={i} style={{
+            padding: '0.8rem 1.1rem',
+            borderBottom: '1.5px solid var(--bg)',
+            display: 'flex', gap: '10px', alignItems: 'flex-start',
+            cursor: 'pointer', transition: 'background 0.15s',
+          }}>
+            <div style={{
+              width: '34px', height: '34px', borderRadius: '10px',
+              background: n.color, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', minWidth: '34px',
+            }}>{n.icon}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--dark)', marginBottom: '2px' }}>{n.title}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 600, lineHeight: 1.4 }}>{n.desc}</div>
+            </div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 700, whiteSpace: 'nowrap' }}>{n.time}</div>
+          </div>
+        ))}
+
+        {/* Footer */}
+        <div style={{
+          padding: '0.7rem', textAlign: 'center',
+          fontSize: '0.78rem', color: 'var(--orange)',
+          fontWeight: 800, cursor: 'pointer',
+        }}>
+          View all notifications
+        </div>
+      </div>
+    </>
+  )}
+</div>
           <Link href="/profile">
             <div
               className="clay-circle"
@@ -774,154 +850,126 @@ export default function HomePage() {
 
 // ===== NOTE CARD =====
 function NoteCard({ note, index }) {
-  const colors = [
-    "var(--orange)",
-    "var(--teal)",
-    "var(--green)",
-    "var(--pink)",
-  ];
-  const bgs = [
-    "var(--orange-light)",
-    "var(--teal-light)",
-    "var(--green-light)",
-    "var(--pink-light)",
-  ];
-  const color = colors[index % colors.length];
-  const bg = bgs[index % bgs.length];
+  const colors = ['var(--orange)', 'var(--teal)', 'var(--green)', 'var(--pink)']
+  const bgs    = ['var(--orange-light)', 'var(--teal-light)', 'var(--green-light)', 'var(--pink-light)']
+  const color  = colors[index % colors.length]
+  const bg     = bgs[index % bgs.length]
+
+  const getFileIcon = (type) => {
+    if (type === 'pdf')   return '📕'
+    if (type === 'image') return '🖼️'
+    if (type === 'docx')  return '📘'
+    if (type === 'pptx')  return '📊'
+    return '📄'
+  }
+
+  const formatSize = (bytes) => {
+    if (!bytes) return ''
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  }
 
   return (
-    <Link href={`/notes/${note._id}`} style={{ textDecoration: "none" }}>
-      <div className="note-card">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: "8px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "0.68rem",
-              fontWeight: 900,
-              padding: "4px 11px",
-              borderRadius: "50px",
-              background: bg,
-              color: color,
-              border: "1.5px solid rgba(255,255,255,0.9)",
-            }}
-          >
-            {note.subject?.name || "General"}
+    <Link href={`/notes/${note._id}`} style={{ textDecoration: 'none' }}>
+      <div className="note-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Top — subject + file type */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+          <span style={{
+            fontSize: '0.68rem', fontWeight: 900, padding: '4px 11px',
+            borderRadius: '50px', background: bg, color: color,
+            border: '1.5px solid rgba(255,255,255,0.9)',
+          }}>{note.subject?.name || 'General'}</span>
+          <span style={{
+            fontSize: '0.68rem', fontWeight: 800,
+            color: 'var(--muted)', display: 'flex',
+            alignItems: 'center', gap: '3px',
+          }}>
+            {getFileIcon(note.fileType)}
+            <span style={{ textTransform: 'uppercase' }}>{note.fileType}</span>
           </span>
         </div>
-        <div
-          style={{
-            fontFamily: "Outfit, sans-serif",
-            fontSize: "0.88rem",
-            fontWeight: 800,
-            color: "var(--dark)",
-            marginBottom: "3px",
-            lineHeight: 1.3,
-          }}
-        >
+
+        {/* Title */}
+        <div style={{
+          fontFamily: 'Outfit, sans-serif', fontSize: '0.9rem',
+          fontWeight: 800, color: 'var(--dark)',
+          marginBottom: '4px', lineHeight: 1.3,
+        }}>
           {note.title}
         </div>
-        <div
-          style={{
-            fontSize: "0.72rem",
-            color: "var(--muted)",
-            fontWeight: 700,
-            marginBottom: "8px",
-          }}
-        >
-          {note.unit} · Sem {note.semester?.replace("Semester ", "")} ·{" "}
-          {note.fileType?.toUpperCase()}
+
+        {/* Subtitle */}
+        <div style={{ fontSize: '0.72rem', color: 'var(--muted)', fontWeight: 700, marginBottom: '10px' }}>
+          {note.unit} · Sem {note.semester?.replace('Semester ', '')} · {note.college}
         </div>
-        <div
-          style={{
-            background: "var(--bg)",
-            borderRadius: "10px",
-            padding: "0.7rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "5px",
-            marginBottom: "8px",
-          }}
-        >
-          {[100, 78, 88].map((w, i) => (
-            <div
-              key={i}
-              style={{
-                height: "6px",
-                borderRadius: "3px",
-                background: "#DDE0EC",
-                width: `${w}%`,
-              }}
-            />
-          ))}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingTop: "8px",
-            borderTop: "1.5px solid #F0F1F8",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <div
-              style={{
-                width: "24px",
-                height: "24px",
-                borderRadius: "50%",
-                background: color,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.58rem",
-                fontWeight: 800,
-                color: "white",
-                border: "var(--clay-border)",
-                boxShadow: "0 2px 0 rgba(0,0,0,0.08)",
-              }}
-            >
-              {note.uploadedBy?.name?.charAt(0) || "U"}
+
+        {/* ✅ Info strip — replaces blank space */}
+        <div style={{
+          background: 'var(--bg)', borderRadius: '10px',
+          padding: '0.7rem', marginBottom: '10px', flex: 1,
+          display: 'flex', flexDirection: 'column', gap: '6px',
+        }}>
+          {/* Year */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--mid)', fontWeight: 700 }}>
+            <span>📅</span>
+            <span>{note.year || 'Year not specified'}</span>
+          </div>
+          {/* File size */}
+          {note.fileSize > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--mid)', fontWeight: 700 }}>
+              <span>📦</span>
+              <span>{formatSize(note.fileSize)}</span>
             </div>
-            <span
-              style={{
-                fontSize: "0.72rem",
-                color: "var(--mid)",
-                fontWeight: 700,
-              }}
-            >
-              {note.uploadedBy?.name?.split(" ")[0] || "Student"}
+          )}
+          {/* Tags */}
+          {note.tags?.length > 0 && (
+            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+              {note.tags.slice(0, 3).map((tag, i) => (
+                <span key={i} style={{
+                  fontSize: '0.62rem', fontWeight: 700,
+                  padding: '2px 7px', borderRadius: '20px',
+                  background: 'white', color: 'var(--muted)',
+                  border: '1.5px solid #E5E7EB',
+                }}>{tag}</span>
+              ))}
+            </div>
+          )}
+          {/* Views */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--mid)', fontWeight: 700 }}>
+            <span>👁</span>
+            <span>{note.viewsCount || 0} views</span>
+          </div>
+        </div>
+
+        {/* Bottom — uploader + stats */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', paddingTop: '8px',
+          borderTop: '1.5px solid #F0F1F8',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{
+              width: '24px', height: '24px', borderRadius: '50%',
+              background: color, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: '0.58rem',
+              fontWeight: 800, color: 'white',
+              border: 'var(--clay-border)', boxShadow: '0 2px 0 rgba(0,0,0,0.08)',
+            }}>
+              {note.uploadedBy?.name?.charAt(0) || 'U'}
+            </div>
+            <span style={{ fontSize: '0.72rem', color: 'var(--mid)', fontWeight: 700 }}>
+              {note.uploadedBy?.name?.split(' ')[0] || 'Student'}
             </span>
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <span
-              style={{
-                fontSize: "0.7rem",
-                color: "var(--pink)",
-                fontWeight: 700,
-              }}
-            >
-              ❤️ {note.likesCount || 0}
-            </span>
-            <span
-              style={{
-                fontSize: "0.7rem",
-                color: "var(--muted)",
-                fontWeight: 700,
-              }}
-            >
-              ⬇ {note.downloadsCount || 0}
-            </span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--pink)', fontWeight: 700 }}>❤️ {note.likesCount || 0}</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 700 }}>⬇ {note.downloadsCount || 0}</span>
           </div>
         </div>
       </div>
     </Link>
-  );
+  )
 }
 
 // ===== SUBJECT SECTION =====

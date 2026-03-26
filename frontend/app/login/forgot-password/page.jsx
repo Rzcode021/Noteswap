@@ -36,16 +36,64 @@ export default function ForgotPasswordPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      
+      {/* ===== RESPONSIVE STYLES ===== */}
+      <style>{`
+        .forgot-nav {
+          padding: 1rem 2rem;
+        }
+        .forgot-nav-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: white;
+          border-radius: 60px;
+          padding: 0.7rem 1.5rem;
+          border: var(--clay-border);
+          box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .forgot-content {
+          max-width: 480px;
+          margin: 0 auto;
+          padding: 3rem 2rem;
+        }
+        .forgot-card {
+          background: white;
+          border-radius: 28px;
+        }
+        .forgot-card-success {
+          padding: 3rem;
+          text-align: center;
+        }
+        .forgot-card-form {
+          padding: 2.5rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+          .forgot-nav {
+            padding: 0.8rem 1rem;
+          }
+          .forgot-nav-inner {
+            padding: 0.6rem 1rem;
+            border-radius: 50px;
+          }
+          .forgot-content {
+            padding: 2rem 1rem;
+          }
+          .forgot-card-success, 
+          .forgot-card-form {
+            padding: 1.5rem;
+            border-radius: 20px;
+          }
+        }
+      `}</style>
 
       {/* NAV */}
-      <div style={{ padding: '1rem 2rem' }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'white', borderRadius: '60px', padding: '0.7rem 1.5rem',
-          border: 'var(--clay-border)',
-          boxShadow: '0 4px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)',
-        }}>
+      <div className="forgot-nav">
+        <div className="forgot-nav-inner">
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
               width: '34px', height: '34px', borderRadius: '10px',
@@ -66,17 +114,11 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* CONTENT */}
-      <div style={{
-        maxWidth: '480px', margin: '0 auto',
-        padding: '3rem 2rem',
-      }}>
+      <div className="forgot-content">
 
         {sent ? (
           /* ===== SUCCESS STATE ===== */
-          <div className="clay" style={{
-            background: 'white', borderRadius: '28px',
-            padding: '3rem', textAlign: 'center',
-          }}>
+          <div className="clay forgot-card forgot-card-success">
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📧</div>
             <h2 style={{
               fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem',
@@ -129,9 +171,7 @@ export default function ForgotPasswordPage() {
 
         ) : (
           /* ===== FORM STATE ===== */
-          <div className="clay" style={{
-            background: 'white', borderRadius: '28px', padding: '2.5rem',
-          }}>
+          <div className="clay forgot-card forgot-card-form">
             <div style={{ fontSize: '3rem', marginBottom: '1rem', textAlign: 'center' }}>🔑</div>
             <h2 style={{
               fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem',
