@@ -18,7 +18,11 @@ export default function HomePage() {
   const [activeSection, setActiveSection] = useState("Home");
   const [search, setSearch] = useState("");
   const [notesLoading, setNotesLoading] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showAllSubjects, setShowAllSubjects] = useState(false);
+  const [showAllHomeSubjects, setShowAllHomeSubjects] = useState(false);
+  const [showAllHomeNotes, setShowAllHomeNotes] = useState(false);
 
   // ✅ Handle auth redirect
   useEffect(() => {
@@ -134,24 +138,173 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+      <style>{`
+        .home-layout {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          min-height: calc(100vh - 60px);
+        }
+        .home-sidebar {
+          background: white;
+          border-right: 2px solid rgba(255,255,255,0.8);
+          padding: 1.5rem 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          box-shadow: 4px 0 16px rgba(0,0,0,0.04);
+          position: sticky;
+          top: 60px;
+          height: calc(100vh - 60px);
+          overflow-y: auto;
+        }
+        .home-main {
+          padding: 1.8rem;
+          overflow-y: auto;
+        }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 12px;
+          margin-bottom: 1.5rem;
+        }
+        .notes-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+        }
+        .home-sidebar {
+          background: rgba(255, 255, 255, 0.6);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border-right: 1px solid rgba(255, 255, 255, 0.8);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+          z-index: 10;
+        }
+        .mobile-menu-btn {
+          display: none;
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: var(--dark);
+          padding: 0;
+          margin-right: 12px;
+        }
+        .sidebar-overlay {
+          display: none;
+        }
+        .mobile-close-btn {
+          display: none;
+        }
+        
+        @media (max-width: 1024px) {
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .notes-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .home-layout {
+            grid-template-columns: 1fr;
+          }
+          .home-nav {
+            padding: 0 1rem !important;
+          }
+          .home-nav form {
+            width: auto !important;
+            flex: 1;
+            margin: 0 10px;
+          }
+          .home-nav form input {
+            width: 80px !important;
+          }
+          .mobile-menu-btn {
+            display: block;
+            margin-right: 16px;
+          }
+          .mobile-close-btn {
+            display: block !important;
+          }
+          .nav-right-actions {
+            gap: 6px !important;
+          }
+          .hide-on-mobile {
+            display: none !important;
+          }
+          .upload-btn {
+            display: none !important;
+          }
+          .home-sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 260px;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+            padding-top: 1rem;
+          }
+          .home-sidebar.open {
+            left: 0;
+          }
+          .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+          }
+          .sidebar-overlay.open {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+          }
+          .home-main {
+            padding: 1rem;
+          }
+          .stats-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .notes-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 500px) {
+          .hide-on-small {
+            display: none !important;
+          }
+          .home-nav form {
+            display: none !important;
+          }
+        }
+      `}</style>
+      
       {/* NAVBAR */}
       <nav
+        className="home-nav nav-glass"
         style={{
-          background: "white",
-          borderBottom: "2px solid rgba(255,255,255,0.8)",
           padding: "0 2rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           height: "60px",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
           position: "sticky",
           top: 0,
           zIndex: 100,
         }}
       >
-        <Link
-          href="/home"
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>☰</button>
+          <Link
+            href="/home"
           style={{
             textDecoration: "none",
             display: "flex",
@@ -186,6 +339,7 @@ export default function HomePage() {
             Note<span style={{ color: "var(--orange)" }}>Swap</span>
           </span>
         </Link>
+        </div>
 
         {/* Search */}
         <form
@@ -220,13 +374,13 @@ export default function HomePage() {
           />
         </form>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="nav-right-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <Link href="/upload">
             <button
-              className="btn-orange"
-              style={{ padding: "8px 18px", fontSize: "0.84rem" }}
+              className="btn-orange upload-btn"
+              style={{ padding: "8px 18px", fontSize: "0.84rem", whiteSpace: "nowrap" }}
             >
-              + Upload Notes
+              + Upload<span className="hide-on-mobile">&nbsp;Notes</span>
             </button>
           </Link>
          {/* ✅ Notification Bell with dropdown */}
@@ -341,41 +495,32 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "220px 1fr",
-          minHeight: "calc(100vh - 60px)",
-        }}
-      >
+      <div className="home-layout">
+        {/* Overlay for mobile sidebar */}
+        <div 
+          className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+        
         {/* SIDEBAR */}
-        <aside
-          style={{
-            background: "white",
-            borderRight: "2px solid rgba(255,255,255,0.8)",
-            padding: "1.5rem 1rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "3px",
-            boxShadow: "4px 0 16px rgba(0,0,0,0.04)",
-            position: "sticky",
-            top: "60px",
-            height: "calc(100vh - 60px)",
-            overflowY: "auto",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "0.65rem",
-              fontWeight: 900,
-              letterSpacing: "2px",
-              textTransform: "uppercase",
-              color: "var(--muted)",
-              padding: "0.5rem 0.75rem",
-              marginTop: "0.8rem",
-            }}
-          >
-            Menu
+        <aside className={`home-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.8rem', padding: '0 0.75rem' }}>
+            <div
+              style={{
+                fontSize: "0.65rem",
+                fontWeight: 900,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+              }}
+            >
+              Menu
+            </div>
+            <button 
+              className="mobile-close-btn"
+              onClick={() => setIsSidebarOpen(false)}
+              style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--muted)', cursor: 'pointer' }}
+            >✕</button>
           </div>
 
           {/* Menu Items */}
@@ -390,7 +535,7 @@ export default function HomePage() {
               key={item.label}
               href={item.href}
               style={{ textDecoration: "none" }}
-              onClick={() => setActiveSection(item.label)}
+              onClick={() => { setActiveSection(item.label); setIsSidebarOpen(false); }}
             >
               <div
                 style={{
@@ -441,12 +586,13 @@ export default function HomePage() {
             Subjects
           </div>
 
-          {subjects.slice(0, 6).map((s, i) => (
+          {subjects.slice(0, showAllSubjects ? subjects.length : 3).map((s, i) => (
             <div
               key={s._id}
               onClick={() => {
                 fetchNotesBySubject(s._id, s.name);
                 setActiveSection(s.name);
+                setIsSidebarOpen(false);
               }}
               style={{
                 display: "flex",
@@ -506,22 +652,21 @@ export default function HomePage() {
           ))}
 
           {/* View all */}
-          <div
-            onClick={() => {
-              fetchNotesBySubject(null, "All");
-              setActiveSection("Home");
-            }}
-            style={{
-              color: "var(--orange)",
-              fontSize: "0.8rem",
-              padding: "0.5rem 0.75rem",
-              cursor: "pointer",
-              fontWeight: 800,
-              marginTop: "4px",
-            }}
-          >
-            + View all subjects
-          </div>
+          {subjects.length > 3 && (
+            <div
+              onClick={() => setShowAllSubjects(!showAllSubjects)}
+              style={{
+                color: "var(--orange)",
+                fontSize: "0.8rem",
+                padding: "0.5rem 0.75rem",
+                cursor: "pointer",
+                fontWeight: 800,
+                marginTop: "4px",
+              }}
+            >
+              {showAllSubjects ? "- View less subjects" : `+ View more subjects (${Math.max(0, subjects.length - 3)})`}
+            </div>
+          )}
 
           {/* Logout */}
 <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1.5px solid #F0F1F8' }}>
@@ -563,7 +708,7 @@ export default function HomePage() {
         </aside>
 
         {/* MAIN CONTENT */}
-        <main style={{ padding: "1.8rem", overflowY: "auto" }}>
+        <main className="home-main">
           {/* Welcome Banner */}
           <div
             style={{
@@ -646,14 +791,7 @@ export default function HomePage() {
           </div>
 
           {/* Stats Row */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "12px",
-              marginBottom: "1.5rem",
-            }}
-          >
+          <div className="stats-grid">
             {[
               {
                 label: "Notes uploaded",
@@ -680,7 +818,7 @@ export default function HomePage() {
                 color: "var(--pink)",
               },
             ].map((s) => (
-              <div key={s.label} className="stat-card">
+              <div key={s.label} className="stat-card hover-float">
                 <div
                   style={{
                     fontSize: "0.72rem",
@@ -753,7 +891,7 @@ export default function HomePage() {
             >
               All
             </button>
-            {subjects.slice(0, 5).map((s) => (
+            {subjects.slice(0, showAllHomeSubjects ? subjects.length : 4).map((s) => (
               <button
                 key={s._id}
                 onClick={() => fetchNotesBySubject(s._id, s.name)}
@@ -767,6 +905,23 @@ export default function HomePage() {
               </button>
             ))}
           </div>
+
+          {subjects.length > 4 && (
+            <div
+              onClick={() => setShowAllHomeSubjects(!showAllHomeSubjects)}
+              style={{
+                color: "var(--orange)",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                fontWeight: 800,
+                marginBottom: "1.5rem",
+                marginTop: "-0.5rem",
+                display: "inline-block",
+              }}
+            >
+              {showAllHomeSubjects ? "↑ View fewer subjects" : `↓ View ${subjects.length - 4} more subjects`}
+            </div>
+          )}
 
           {/* Notes Grid */}
           {notesLoading ? (
@@ -819,18 +974,24 @@ export default function HomePage() {
               </Link>
             </div>
           ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "1rem",
-                marginBottom: "2rem",
-              }}
-            >
-              {notes.map((note, i) => (
-                <NoteCard key={note._id} note={note} index={i} />
-              ))}
-            </div>
+            <>
+              <div className="notes-grid" style={{ marginBottom: notes.length > 4 ? "1rem" : "2rem" }}>
+                {notes.slice(0, showAllHomeNotes ? notes.length : 4).map((note, i) => (
+                  <NoteCard key={note._id} note={note} index={i} />
+                ))}
+              </div>
+              {notes.length > 4 && (
+                <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+                  <button
+                    onClick={() => setShowAllHomeNotes(!showAllHomeNotes)}
+                    className="btn-outline"
+                    style={{ padding: "8px 24px", fontSize: "0.85rem", borderRadius: "50px" }}
+                  >
+                    {showAllHomeNotes ? "↑ View fewer notes" : `↓ View ${notes.length - 4} more notes`}
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {/* Subject-wise Sections */}
@@ -1045,13 +1206,7 @@ function SubjectSection({ subject, color, bg }) {
           View all →
         </span>
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1rem",
-        }}
-      >
+      <div className="notes-grid">
         {notes.map((note, i) => (
           <NoteCard key={note._id} note={note} index={i} />
         ))}

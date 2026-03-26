@@ -134,13 +134,102 @@ export default function ProfilePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <style>{`
+        .profile-layout {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 2rem;
+          display: grid;
+          grid-template-columns: 1fr 280px;
+          gap: 1.5rem;
+          align-items: start;
+        }
+        .stats-strip {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 1.5rem;
+        }
+        .notes-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-bottom: 1rem;
+        }
+        .tabs-container {
+          max-width: 1100px;
+          margin: 0 auto;
+          display: flex;
+          padding-top: 0.8rem;
+          position: relative;
+          z-index: 1;
+          overflow-x: auto;
+          scrollbar-width: none; /* Firefox */
+        }
+        .tabs-container::-webkit-scrollbar {
+          display: none; /* Safari and Chrome */
+        }
 
+        @media (max-width: 900px) {
+          .profile-layout {
+            grid-template-columns: 1fr;
+          }
+          .stats-strip {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        
+        @media (max-width: 600px) {
+          .profile-layout {
+            padding: 1rem;
+          }
+          .notes-grid {
+            grid-template-columns: 1fr;
+          }
+          .form-grid {
+            grid-template-columns: 1fr;
+          }
+          .profile-nav {
+            padding: 0 1rem !important;
+          }
+          .upload-btn {
+            display: none !important;
+          }
+          .hide-on-mobile {
+            display: none !important;
+          }
+          .profile-hero {
+            padding: 1.5rem 1rem 0 !important;
+          }
+          .profile-hero-inner {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 1rem !important;
+          }
+          .profile-hero-info {
+            padding-bottom: 1.5rem !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .profile-hero-header {
+            justify-content: center !important;
+          }
+          .profile-hero-tags {
+            justify-content: center !important;
+          }
+        }
+      `}</style>
       {/* NAVBAR */}
-      <nav style={{
-        background: 'white', borderBottom: '2px solid rgba(255,255,255,0.8)',
+      <nav className="profile-nav nav-glass" style={{
         padding: '0 2rem', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', height: '60px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
         position: 'sticky', top: 0, zIndex: 100,
       }}>
         <Link href="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -150,27 +239,27 @@ export default function ProfilePage() {
             justifyContent: 'center', fontSize: '0.85rem',
             border: 'var(--clay-border)', boxShadow: '0 3px 0 var(--orange-dark)',
           }}>📚</div>
-          <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.2rem', fontWeight: 900, color: 'var(--dark)' }}>
+          <span className="brand-text" style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.2rem', fontWeight: 900, color: 'var(--dark)' }}>
             Note<span style={{ color: 'var(--orange)' }}>Swap</span>
           </span>
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link href="/home">
-            <button className="btn-outline" style={{ padding: '8px 18px', fontSize: '0.82rem' }}>
+            <button className="btn-outline home-btn" style={{ padding: '8px 18px', fontSize: '0.82rem' }}>
               ← Home
             </button>
           </Link>
           <Link href="/upload">
-            <button className="btn-orange" style={{ padding: '8px 18px', fontSize: '0.84rem' }}>
-              + Upload Notes
+            <button className="btn-orange upload-btn" style={{ padding: '8px 18px', fontSize: '0.84rem', whiteSpace: 'nowrap' }}>
+              + Upload<span className="hide-on-mobile">&nbsp;Notes</span>
             </button>
           </Link>
         </div>
       </nav>
 
       {/* PROFILE HERO */}
-      <div style={{
+      <div className="profile-hero" style={{
         background: 'var(--orange)', padding: '2rem 2rem 0',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -189,7 +278,7 @@ export default function ProfilePage() {
           }} />
         ))}
 
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '1.5rem', alignItems: 'flex-end', position: 'relative', zIndex: 1 }}>
+        <div className="profile-hero-inner" style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '1.5rem', alignItems: 'flex-end', position: 'relative', zIndex: 1 }}>
           {/* Avatar */}
           <div style={{
             width: '88px', height: '88px', borderRadius: '50%',
@@ -203,10 +292,10 @@ export default function ProfilePage() {
           </div>
 
           {/* Info */}
-          <div style={{ flex: 1, paddingBottom: '1.5rem' }}>
-            <div style={{
+          <div className="profile-hero-info" style={{ flex: 1, paddingBottom: '1.5rem' }}>
+            <div className="profile-hero-header" style={{
               display: 'flex', alignItems: 'center', gap: '10px',
-              marginBottom: '4px',
+              marginBottom: '4px', flexWrap: 'wrap',
             }}>
               <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 900, color: 'white' }}>
                 {user?.name}
@@ -227,7 +316,7 @@ export default function ProfilePage() {
             <div style={{ fontSize: '0.84rem', color: 'rgba(255,255,255,0.75)', fontWeight: 600, marginBottom: '0.6rem' }}>
               {user?.email || user?.phone}
             </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="profile-hero-tags" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {[user?.college, user?.semester, user?.year].filter(Boolean).map((tag, i) => (
                 <span key={i} style={{
                   background: 'rgba(255,255,255,0.2)', color: 'white',
@@ -255,7 +344,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', paddingTop: '0.8rem', position: 'relative', zIndex: 1 }}>
+        <div className="tabs-container">
           {[
             { tab: 'notes',     label: 'My Notes',    count: myNotes.length       },
             { tab: 'bookmarks', label: 'Bookmarks',   count: user?.bookmarks?.length || 0 },
@@ -288,7 +377,7 @@ export default function ProfilePage() {
       </div>
 
       {/* PAGE BODY */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 280px', gap: '1.5rem', alignItems: 'start' }}>
+      <div className="profile-layout">
 
         {/* LEFT */}
         <div>
@@ -307,7 +396,7 @@ export default function ProfilePage() {
                 ✏️ Edit Profile
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
+              <div className="form-grid">
                 <div>
                   <label className="field-label">Full Name</label>
                   <input className="input-clay" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your name" />
@@ -323,7 +412,7 @@ export default function ProfilePage() {
                 <input className="input-clay" value={form.college} onChange={e => setForm({ ...form, college: e.target.value })} placeholder="AKTU, Lucknow" />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
+              <div className="form-grid">
                 <div>
                   <label className="field-label">Semester</label>
                   <select className="input-clay" value={form.semester} onChange={e => setForm({ ...form, semester: e.target.value })} style={{ cursor: 'pointer' }}>
@@ -377,7 +466,7 @@ export default function ProfilePage() {
           )}
 
           {/* Stats Strip */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '1.5rem' }}>
+          <div className="stats-strip">
             {stats.map(s => (
               <div key={s.label} className="clay-sm" style={{ background: 'white', borderRadius: '14px', padding: '0.9rem', textAlign: 'center' }}>
                 <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 900, color: 'var(--dark)' }}>{s.val}</div>
@@ -416,7 +505,7 @@ export default function ProfilePage() {
                   </Link>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div className="notes-grid">
                   {myNotes.map((note, i) => {
                     const s = getStatusStyle(note.status)
                     return (
@@ -478,7 +567,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div className="notes-grid">
                   {bookmarks.map((note, i) => (
                     <Link key={note._id} href={`/notes/${note._id}`} style={{ textDecoration: 'none' }}>
                       <div className="note-card">
@@ -523,7 +612,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div className="notes-grid">
                   {likedNotes.map((note, i) => (
                     <Link key={note._id} href={`/notes/${note._id}`} style={{ textDecoration: 'none' }}>
                       <div className="note-card">

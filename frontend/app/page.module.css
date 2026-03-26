@@ -56,7 +56,10 @@
 .mobileMenuOverlay {
   display: none;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   align-items: flex-start;
@@ -182,7 +185,7 @@
   color: var(--mid);
   margin-bottom: 1.2rem;
   border: var(--clay-border);
-  box-shadow: 0 3px 0 rgba(0,0,0,0.05), 0 6px 14px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.05), 0 6px 14px rgba(0, 0, 0, 0.06);
 }
 
 .heroTitle {
@@ -339,7 +342,9 @@
 
 .howGradientBar {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 5px;
   background: linear-gradient(90deg, var(--orange), #FFD580, var(--green), var(--teal));
   border-radius: 28px 28px 0 0;
@@ -394,7 +399,7 @@
   align-items: center;
   justify-content: center;
   border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .stepTitle {
@@ -445,7 +450,7 @@
   font-size: 1.4rem;
   margin-bottom: 0.8rem;
   border: var(--clay-border);
-  box-shadow: 0 3px 0 rgba(0,0,0,0.07);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.07);
 }
 
 .subjectName {
@@ -526,7 +531,7 @@
   font-weight: 800;
   color: white;
   border: var(--clay-border);
-  box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .reviewName {
@@ -609,7 +614,7 @@
   background: #1a1f36;
   border-radius: 28px;
   border: 2px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 16px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15), 0 16px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
@@ -789,33 +794,103 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-  .featuresGrid { grid-template-columns: repeat(2, 1fr); }
-  .footerGrid   { grid-template-columns: 1fr 1fr; }
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 768px) {
-  .heroGrid      { grid-template-columns: 1fr; }
-  .heroRight     { display: none; }
-  .heroTitle     { font-size: 2.2rem; }
-  .featuresGrid  { grid-template-columns: 1fr 1fr; }
-  .stepsGrid     { grid-template-columns: 1fr; }
-  .stepsLine     { display: none; }
-  .subjectsGrid  { grid-template-columns: 1fr 1fr; }
-  .reviewsGrid   { grid-template-columns: 1fr; }
-  .footerGrid    { grid-template-columns: 1fr; gap: 2rem; }
-  .footerBottom  { flex-direction: column; gap: 0.5rem; text-align: center; }
-  .ctaCard       { padding: 2rem; }
-  .ctaTitle      { font-size: 1.6rem; }
-  .navLinks      { display: none; }
-  .mobileMenuBtn { display: flex; }
-  .navGetStarted { display: none; }  /* ✅ hide button on mobile */
-  .heroStats     { gap: 1.5rem; }
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroRight {
+    display: none;
+  }
+
+  .heroTitle {
+    font-size: 2.2rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stepsLine {
+    display: none;
+  }
+
+  .subjectsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .ctaCard {
+    padding: 2rem;
+  }
+
+  .ctaTitle {
+    font-size: 1.6rem;
+  }
+
+  .navLinks {
+    display: none;
+  }
+
+  .mobileMenuBtn {
+    display: flex;
+  }
+
+  .navGetStarted {
+    display: none;
+  }
+
+  /* ✅ hide button on mobile */
+  .heroStats {
+    gap: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .featuresGrid { grid-template-columns: 1fr; }
-  .subjectsGrid { grid-template-columns: 1fr; }
-  .heroBtns     { flex-direction: column; }
-  .heroTitle    { font-size: 1.9rem; }
-  .ctaBadges    { gap: 6px; }
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .subjectsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroBtns {
+    flex-direction: column;
+  }
+
+  .heroTitle {
+    font-size: 1.9rem;
+  }
+
+  .ctaBadges {
+    gap: 6px;
+  }
 }

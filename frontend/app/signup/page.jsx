@@ -7,16 +7,16 @@ import { signupWithEmail, loginWithGoogle } from '../../firebase/auth.firebase'
 import { useAuth } from '../../context/AuthContext'
 
 export default function SignupPage() {
-  const router                         = useRouter()
+  const router = useRouter()
   const { user, loading: authLoading } = useAuth()
-  const [form, setForm]                = useState({
+  const [form, setForm] = useState({
     firstName: '', lastName: '',
-    email: '',    phone: '',
-    college: '',  semester: '',
+    email: '', phone: '',
+    college: '', semester: '',
     password: '',
   })
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError]           = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!authLoading && user) router.replace('/home')
@@ -39,10 +39,10 @@ export default function SignupPage() {
     setSubmitting(true)
     try {
       localStorage.setItem('pendingProfileData', JSON.stringify({
-        phone:    form.phone    || '',
-        college:  form.college  || '',
+        phone: form.phone || '',
+        college: form.college || '',
         semester: form.semester || '',
-        year:     form.year     || '',
+        year: form.year || '',
       }))
       await signupWithEmail(form.email, form.password)
     } catch (err) {
@@ -66,13 +66,13 @@ export default function SignupPage() {
 
   const getFriendlyError = (code) => {
     switch (code) {
-      case 'auth/email-already-in-use':   return 'An account with this email already exists.'
-      case 'auth/weak-password':          return 'Password must be at least 6 characters.'
-      case 'auth/invalid-email':          return 'Please enter a valid email address.'
-      case 'auth/popup-closed-by-user':   return 'Google sign-in was cancelled.'
-      case 'auth/popup-blocked':          return 'Popup was blocked. Please allow popups.'
+      case 'auth/email-already-in-use': return 'An account with this email already exists.'
+      case 'auth/weak-password': return 'Password must be at least 6 characters.'
+      case 'auth/invalid-email': return 'Please enter a valid email address.'
+      case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.'
+      case 'auth/popup-blocked': return 'Popup was blocked. Please allow popups.'
       case 'auth/network-request-failed': return 'Network error. Check your connection.'
-      default:                            return `Error: ${code}`
+      default: return `Error: ${code}`
     }
   }
 
@@ -171,7 +171,7 @@ export default function SignupPage() {
             animation: 'floatCard 4s ease-in-out infinite',
           }}>
             {[
-              { w: 180, h: 180, top: '-60px', right: '-40px'   },
+              { w: 180, h: 180, top: '-60px', right: '-40px' },
               { w: 120, h: 120, bottom: '-30px', left: '-20px' },
             ].map((b, i) => (
               <div key={i} style={{

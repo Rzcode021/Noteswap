@@ -21,6 +21,7 @@ export default function AdminPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeTab, setActiveTab]         = useState('dashboard')
   const [stats, setStats]                 = useState(null)
   const [pendingNotes, setPendingNotes]   = useState([])
@@ -213,28 +214,122 @@ const handleDownload = async (note) => {
   if (user?.role !== 'admin') return null
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}>
+    <div className="admin-layout" style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .admin-main-wrapper {
+          display: flex;
+          flex: 1;
+        }
+        .admin-sidebar {
+          width: 220px;
+          min-height: 100vh;
+          background: #1a1f36;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          overflow-y: auto;
+          z-index: 1000;
+          transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .mobile-admin-header {
+          display: none;
+        }
+        .admin-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+        .admin-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 1.4rem;
+        }
+        .admin-main-content {
+          flex: 1;
+          padding: 2rem;
+          overflow-y: auto;
+        }
+        @media (max-width: 900px) {
+          .admin-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 768px) {
+          .admin-main-wrapper {
+            flex-direction: column;
+          }
+          .admin-main-content {
+            padding: 1rem;
+          }
+          .admin-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translateX(-100%);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+          }
+          .admin-sidebar.open {
+            transform: translateX(0);
+          }
+          .mobile-admin-header {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+          }
+          .admin-header-row {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+          }
+        }
+        @media (max-width: 600px) {
+          .admin-stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+      
+      {/* Mobile Top Header */}
+      <div className="mobile-admin-header nav-glass">
+        <button onClick={() => setIsSidebarOpen(true)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', marginRight: '1rem', color: 'var(--dark)' }}>☰</button>
+        <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.2rem', fontWeight: 900, color: 'var(--dark)' }}>Admin Panel</div>
+      </div>
 
-      {/* ===== SIDEBAR ===== */}
-      <aside style={{
-        width: '220px', minHeight: '100vh',
-        background: '#1a1f36', flexShrink: 0,
-        display: 'flex', flexDirection: 'column',
-        position: 'sticky', top: 0, height: '100vh',
-        overflowY: 'auto',
-      }}>
-        {/* Logo */}
-        <div style={{ padding: '1.5rem 1.2rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <Link href="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'var(--orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', boxShadow: '0 3px 0 var(--orange-dark)' }}>📚</div>
-            <div>
-              <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 900, color: 'white' }}>
-                Note<span style={{ color: 'var(--orange)' }}>Swap</span>
+      <div className="admin-main-wrapper">
+        <div 
+          className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} 
+          onClick={() => setIsSidebarOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999,
+            opacity: isSidebarOpen ? 1 : 0, pointerEvents: isSidebarOpen ? 'auto' : 'none',
+            transition: 'opacity 0.3s ease'
+          }}
+        />
+
+        {/* ===== SIDEBAR ===== */}
+        <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Link href="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', padding: '1.5rem 1.2rem' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'var(--orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', boxShadow: '0 3px 0 var(--orange-dark)' }}>📚</div>
+              <div>
+                <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 900, color: 'white' }}>
+                  Note<span style={{ color: 'var(--orange)' }}>Swap</span>
+                </div>
+                <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</div>
               </div>
-              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</div>
-            </div>
-          </Link>
-        </div>
+            </Link>
+            <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--muted)', cursor: 'pointer', paddingRight: '1rem', display: isSidebarOpen && window?.innerWidth <= 768 ? 'block' : 'none' }}>✕</button>
+          </div>
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }} />
 
         {/* Nav Items */}
         <nav style={{ padding: '1rem 0.8rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
@@ -248,7 +343,7 @@ const handleDownload = async (note) => {
           ].map(item => (
             <button
               key={item.tab}
-              onClick={() => handleTabChange(item.tab)}
+              onClick={() => { handleTabChange(item.tab); setIsSidebarOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '9px 12px', borderRadius: '12px', border: 'none',
@@ -298,7 +393,7 @@ const handleDownload = async (note) => {
       </aside>
 
       {/* ===== MAIN CONTENT ===== */}
-      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+      <main className="admin-main-content">
 
         {/* ===== DASHBOARD TAB ===== */}
         {activeTab === 'dashboard' && (
@@ -319,7 +414,7 @@ const handleDownload = async (note) => {
             ) : (
               <>
                 {/* Stats Row */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                <div className="admin-stats-grid">
                   {[
                     { label: 'Pending',    val: stats?.pendingNotes   || pendingNotes.length || 0, icon: '⏳', color: 'var(--orange)', bg: 'var(--orange-light)' },
                     { label: 'Live Notes', val: stats?.approvedNotes  || 0, icon: '✅', color: 'var(--green)',  bg: 'var(--green-light)'  },
@@ -337,8 +432,8 @@ const handleDownload = async (note) => {
                 </div>
 
                 {/* Pending Notes Section */}
-                <div className="clay-sm" style={{ background: 'white', borderRadius: '20px', overflow: 'hidden' }}>
-                  <div style={{ padding: '1rem 1.4rem', borderBottom: '2px solid var(--bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="clay-sm hover-float" style={{ background: 'white', borderRadius: '20px', overflow: 'hidden' }}>
+                  <div className="admin-header-row" style={{ borderBottom: '2px solid var(--bg)' }}>
                     <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.92rem', fontWeight: 900, color: 'var(--dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       Pending Approvals
                       {pendingNotes.length > 0 && (
@@ -390,15 +485,9 @@ const handleDownload = async (note) => {
               </p>
             </div>
 
-            <div className="clay-sm" style={{ background: 'white', borderRadius: '20px', overflow: 'hidden' }}>
+            <div className="clay-sm hover-float" style={{ background: 'white', borderRadius: '20px', overflow: 'hidden' }}>
             {/* ✅ Simple header — no filters needed */}
-<div style={{
-  padding: '0.8rem 1.4rem',
-  borderBottom: '2px solid var(--bg)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-}}>
+<div className="admin-header-row" style={{ borderBottom: '2px solid var(--bg)' }}>
   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
     <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--mid)' }}>
       Showing all pending notes
@@ -580,7 +669,9 @@ const handleDownload = async (note) => {
           </div>
         )}
       </main>
-
+      </div>
+      {/* End admin-main-wrapper */}
+      
       {/* ===== PREVIEW MODAL ===== */}
       {previewNote && (
         <div style={{

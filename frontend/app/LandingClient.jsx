@@ -18,10 +18,10 @@ const getModalContent = (styles) => ({
         </p>
         <div className={styles.modalStats}>
           {[
-            { val: '12K+', label: 'Notes Shared'  },
-            { val: '3.8K+', label: 'Students'     },
-            { val: '200+',  label: 'Subjects'      },
-            { val: '100%',  label: 'Free Forever'  },
+            { val: '12K+', label: 'Notes Shared' },
+            { val: '3.8K+', label: 'Students' },
+            { val: '200+', label: 'Subjects' },
+            { val: '100%', label: 'Free Forever' },
           ].map(s => (
             <div key={s.label} className={styles.modalStatBox}>
               <div className={styles.modalStatVal}>{s.val}</div>
@@ -64,10 +64,10 @@ const getModalContent = (styles) => ({
       <div>
         <p className={styles.policyText} style={{ marginBottom: '1.5rem' }}>Have a question, suggestion or issue? We'd love to hear from you!</p>
         {[
-          { icon: '📧', label: 'Email',     val: 'support@noteswap.in'  },
-          { icon: '📱', label: 'WhatsApp',  val: '+91 98765 43210'       },
-          { icon: '🐦', label: 'Twitter',   val: '@noteswap_in'          },
-          { icon: '📸', label: 'Instagram', val: '@noteswap.in'          },
+          { icon: '📧', label: 'Email', val: 'support@noteswap.in' },
+          { icon: '📱', label: 'WhatsApp', val: '+91 98765 43210' },
+          { icon: '🐦', label: 'Twitter', val: '@noteswap_in' },
+          { icon: '📸', label: 'Instagram', val: '@noteswap.in' },
         ].map(c => (
           <div key={c.label} className={styles.modalContactItem}>
             <div style={{ fontSize: '1.2rem' }}>{c.icon}</div>
@@ -86,13 +86,13 @@ const getModalContent = (styles) => ({
     content: (
       <div className={styles.scrollableContent}>
         {[
-          { heading: '1. Information We Collect',   text: 'We collect information you provide directly to us, such as your name, email address, phone number, and college details when you create an account.' },
+          { heading: '1. Information We Collect', text: 'We collect information you provide directly to us, such as your name, email address, phone number, and college details when you create an account.' },
           { heading: '2. How We Use Your Information', text: 'We use the information we collect to provide and improve our services, send you notifications about your uploaded notes, and communicate with you about platform updates.' },
-          { heading: '3. Information Sharing',      text: 'We do not sell, trade, or rent your personal information to third parties. Your name and college may be visible on notes you upload, but your email and phone number remain private.' },
-          { heading: '4. Data Security',            text: 'We use Firebase Authentication and industry-standard encryption to protect your data. Files are stored securely on Cloudinary servers.' },
-          { heading: '5. Cookies',                  text: 'We use Firebase session cookies for authentication purposes only. We do not use tracking or advertising cookies.' },
-          { heading: '6. Your Rights',              text: 'You can request deletion of your account and all associated data at any time by contacting us at support@noteswap.in.' },
-          { heading: '7. Contact',                  text: 'If you have any questions about this Privacy Policy, please contact us at support@noteswap.in.' },
+          { heading: '3. Information Sharing', text: 'We do not sell, trade, or rent your personal information to third parties. Your name and college may be visible on notes you upload, but your email and phone number remain private.' },
+          { heading: '4. Data Security', text: 'We use Firebase Authentication and industry-standard encryption to protect your data. Files are stored securely on Cloudinary servers.' },
+          { heading: '5. Cookies', text: 'We use Firebase session cookies for authentication purposes only. We do not use tracking or advertising cookies.' },
+          { heading: '6. Your Rights', text: 'You can request deletion of your account and all associated data at any time by contacting us at support@noteswap.in.' },
+          { heading: '7. Contact', text: 'If you have any questions about this Privacy Policy, please contact us at support@noteswap.in.' },
         ].map(s => (
           <div key={s.heading} className={styles.policySection}>
             <h4 className={styles.policyHeading}>{s.heading}</h4>
@@ -107,14 +107,14 @@ const getModalContent = (styles) => ({
     content: (
       <div className={styles.scrollableContent}>
         {[
-          { heading: '1. Acceptance of Terms',      text: 'By using NoteSwap, you agree to these terms. If you disagree with any part, you may not use our service.' },
-          { heading: '2. User Accounts',            text: 'You must provide accurate information when creating an account. You are responsible for maintaining the security of your account.' },
-          { heading: '3. Content Guidelines',       text: 'You may only upload notes that you have created yourself or have permission to share. Plagiarised or inappropriate content is strictly prohibited.' },
-          { heading: '4. Admin Review',             text: 'All uploaded notes go through admin review before being published. We reserve the right to reject any content that does not meet our quality standards.' },
-          { heading: '5. Intellectual Property',    text: 'You retain ownership of notes you upload. By uploading, you grant NoteSwap a license to display and distribute your notes on the platform.' },
-          { heading: '6. Prohibited Activities',    text: 'You may not use NoteSwap for any illegal purpose, upload malicious content, attempt to hack the platform, or harass other users.' },
-          { heading: '7. Termination',              text: 'We reserve the right to terminate accounts that violate these terms. You may delete your account at any time.' },
-          { heading: '8. Limitation of Liability',  text: 'NoteSwap is provided as-is. We are not liable for any damages arising from your use of the platform.' },
+          { heading: '1. Acceptance of Terms', text: 'By using NoteSwap, you agree to these terms. If you disagree with any part, you may not use our service.' },
+          { heading: '2. User Accounts', text: 'You must provide accurate information when creating an account. You are responsible for maintaining the security of your account.' },
+          { heading: '3. Content Guidelines', text: 'You may only upload notes that you have created yourself or have permission to share. Plagiarised or inappropriate content is strictly prohibited.' },
+          { heading: '4. Admin Review', text: 'All uploaded notes go through admin review before being published. We reserve the right to reject any content that does not meet our quality standards.' },
+          { heading: '5. Intellectual Property', text: 'You retain ownership of notes you upload. By uploading, you grant NoteSwap a license to display and distribute your notes on the platform.' },
+          { heading: '6. Prohibited Activities', text: 'You may not use NoteSwap for any illegal purpose, upload malicious content, attempt to hack the platform, or harass other users.' },
+          { heading: '7. Termination', text: 'We reserve the right to terminate accounts that violate these terms. You may delete your account at any time.' },
+          { heading: '8. Limitation of Liability', text: 'NoteSwap is provided as-is. We are not liable for any damages arising from your use of the platform.' },
         ].map(s => (
           <div key={s.heading} className={styles.policySection}>
             <h4 className={styles.policyHeading}>{s.heading}</h4>
@@ -130,10 +130,10 @@ const getModalContent = (styles) => ({
       <div>
         <p className={styles.policyText} style={{ marginBottom: '1.5rem' }}>Found a bug, inappropriate content, or have a complaint? Let us know!</p>
         {[
-          { icon: '🐛', label: 'Bug Report',            desc: 'Something broken on the platform'          },
-          { icon: '⚠️', label: 'Inappropriate Content', desc: 'Report offensive or wrong notes'            },
-          { icon: '📋', label: 'Copyright Issue',        desc: 'Your content was used without permission'  },
-          { icon: '💡', label: 'Feature Request',        desc: 'Suggest a new feature or improvement'      },
+          { icon: '🐛', label: 'Bug Report', desc: 'Something broken on the platform' },
+          { icon: '⚠️', label: 'Inappropriate Content', desc: 'Report offensive or wrong notes' },
+          { icon: '📋', label: 'Copyright Issue', desc: 'Your content was used without permission' },
+          { icon: '💡', label: 'Feature Request', desc: 'Suggest a new feature or improvement' },
         ].map(r => (
           <div key={r.label} className={styles.modalContactItem} style={{ cursor: 'pointer' }}>
             <div style={{ fontSize: '1.3rem' }}>{r.icon}</div>
@@ -155,14 +155,14 @@ const getModalContent = (styles) => ({
     content: (
       <div className={styles.scrollableContent}>
         {[
-          { q: 'How do I upload notes?',         a: 'Click "Upload Notes" in the navbar, fill in the details, select your file and submit. Admin will review within 24-48 hours.' },
+          { q: 'How do I upload notes?', a: 'Click "Upload Notes" in the navbar, fill in the details, select your file and submit. Admin will review within 24-48 hours.' },
           { q: 'What file types are supported?', a: 'We support PDF, JPG, PNG, DOCX and PPTX files up to 20MB.' },
-          { q: 'How long does approval take?',   a: 'Usually 24-48 hours. Track status in Profile → My Notes.' },
-          { q: 'Why was my note rejected?',      a: 'Check Profile → My Notes for the rejection reason. Common reasons: blurry file, wrong subject, plagiarised content.' },
-          { q: 'Is NoteSwap really free?',       a: 'Yes! 100% free forever. No subscription, no hidden charges.' },
-          { q: 'How do I reset my password?',    a: 'Click "Forgot Password?" on the login page. We\'ll send a reset link to your email.' },
-          { q: 'Can I delete my notes?',         a: 'Contact us at support@noteswap.in for deletion requests.' },
-          { q: 'How do I report content?',       a: 'Click "Report this note" on the note detail page or email report@noteswap.in.' },
+          { q: 'How long does approval take?', a: 'Usually 24-48 hours. Track status in Profile → My Notes.' },
+          { q: 'Why was my note rejected?', a: 'Check Profile → My Notes for the rejection reason. Common reasons: blurry file, wrong subject, plagiarised content.' },
+          { q: 'Is NoteSwap really free?', a: 'Yes! 100% free forever. No subscription, no hidden charges.' },
+          { q: 'How do I reset my password?', a: 'Click "Forgot Password?" on the login page. We\'ll send a reset link to your email.' },
+          { q: 'Can I delete my notes?', a: 'Contact us at support@noteswap.in for deletion requests.' },
+          { q: 'How do I report content?', a: 'Click "Report this note" on the note detail page or email report@noteswap.in.' },
         ].map((faq, i) => (
           <div key={i} className={styles.faqItem}>
             <div className={styles.faqQ}>Q: {faq.q}</div>
@@ -175,10 +175,10 @@ const getModalContent = (styles) => ({
 })
 
 const colors = ['var(--orange)', 'var(--teal)', 'var(--green)', 'var(--pink)']
-const bgs    = ['var(--orange-light)', 'var(--teal-light)', 'var(--green-light)', 'var(--pink-light)']
+const bgs = ['var(--orange-light)', 'var(--teal-light)', 'var(--green-light)', 'var(--pink-light)']
 
 export default function LandingClient({ subjects }) {
-  const [modal, setModal]       = useState(null)
+  const [modal, setModal] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const modalContent = getModalContent(styles)
@@ -206,10 +206,10 @@ export default function LandingClient({ subjects }) {
             Note<span style={{ color: 'var(--orange)' }}>Swap</span>
           </div>
           {[
-            { label: 'Home',         href: '#'             },
-            { label: 'Features',     href: '#features'     },
+            { label: 'Home', href: '#' },
+            { label: 'Features', href: '#features' },
             { label: 'How it Works', href: '#how-it-works' },
-            { label: 'Reviews',      href: '#reviews'      },
+            { label: 'Reviews', href: '#reviews' },
           ].map(item => (
             <a key={item.label} href={item.href} className={styles.mobileMenuLink} onClick={() => setMenuOpen(false)}>
               {item.label}
@@ -228,19 +228,19 @@ export default function LandingClient({ subjects }) {
         <nav className="navbar-float" style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} >
             <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div  style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', border: 'var(--clay-border)', boxShadow: '0 3px 0 var(--orange-dark)' }}>📚</div>
-            <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: 'var(--dark)' }}>
-              Note<span style={{ color: 'var(--orange)' }}>Swap</span>
-            </span>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', border: 'var(--clay-border)', boxShadow: '0 3px 0 var(--orange-dark)' }}>📚</div>
+              <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: 'var(--dark)' }}>
+                Note<span style={{ color: 'var(--orange)' }}>Swap</span>
+              </span>
             </Link>
           </div>
 
           <ul className={styles.navLinks}>
             {[
-              { label: 'Home',         href: '#'             },
-              { label: 'Features',     href: '#features'     },
+              { label: 'Home', href: '#' },
+              { label: 'Features', href: '#features' },
               { label: 'How it Works', href: '#how-it-works' },
-              { label: 'Reviews',      href: '#reviews'      },
+              { label: 'Reviews', href: '#reviews' },
             ].map(item => (
               <li key={item.label}>
                 <a href={item.href} className="nav-link">{item.label}</a>
@@ -249,16 +249,16 @@ export default function LandingClient({ subjects }) {
           </ul>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-  {/* ✅ Hidden on mobile */}
-  <div className={styles.navGetStarted}>
-    <Link href="/login">
-      <button className="btn-orange" style={{ padding: '10px 22px', fontSize: '0.88rem' }}>Get Started Free →</button>
-    </Link>
-  </div>
-  <button className={styles.mobileMenuBtn} onClick={() => setMenuOpen(true)}>
-    {[0,1,2].map(i => <div key={i} className={styles.mobileMenuBtnBar} />)}
-  </button>
-</div>
+            {/* ✅ Hidden on mobile */}
+            <div className={styles.navGetStarted}>
+              <Link href="/login">
+                <button className="btn-orange" style={{ padding: '10px 22px', fontSize: '0.88rem' }}>Get Started Free →</button>
+              </Link>
+            </div>
+            <button className={styles.mobileMenuBtn} onClick={() => setMenuOpen(true)}>
+              {[0, 1, 2].map(i => <div key={i} className={styles.mobileMenuBtnBar} />)}
+            </button>
+          </div>
         </nav>
       </div>
 
@@ -266,11 +266,11 @@ export default function LandingClient({ subjects }) {
       <section className={styles.heroSection}>
         <div className={styles.bubblesContainer}>
           {[
-            { w: 260, h: 260, color: 'rgba(245,166,35,0.12)', top: '-70px',  left: '-50px',  anim: 'animate-bubble1' },
-            { w: 160, h: 160, color: 'rgba(16,185,129,0.08)', top: '80px',   left: '200px',  anim: 'animate-bubble2' },
-            { w: 110, h: 110, color: 'rgba(14,165,233,0.08)', top: '30px',   right: '280px', anim: 'animate-bubble3' },
-            { w: 320, h: 320, color: 'rgba(244,63,94,0.06)',  top: '-90px',  right: '-70px', anim: 'animate-bubble4' },
-            { w: 90,  h: 90,  color: 'rgba(245,166,35,0.10)', top: '220px',  right: '160px', anim: 'animate-bubble5' },
+            { w: 260, h: 260, color: 'rgba(245,166,35,0.12)', top: '-70px', left: '-50px', anim: 'animate-bubble1' },
+            { w: 160, h: 160, color: 'rgba(16,185,129,0.08)', top: '80px', left: '200px', anim: 'animate-bubble2' },
+            { w: 110, h: 110, color: 'rgba(14,165,233,0.08)', top: '30px', right: '280px', anim: 'animate-bubble3' },
+            { w: 320, h: 320, color: 'rgba(244,63,94,0.06)', top: '-90px', right: '-70px', anim: 'animate-bubble4' },
+            { w: 90, h: 90, color: 'rgba(245,166,35,0.10)', top: '220px', right: '160px', anim: 'animate-bubble5' },
           ].map((b, i) => (
             <div key={i} className={b.anim} style={{ position: 'absolute', borderRadius: '50%', width: b.w, height: b.h, background: b.color, opacity: 0.6, top: b.top, left: b.left, right: b.right }} />
           ))}
@@ -307,8 +307,8 @@ export default function LandingClient({ subjects }) {
             <div className={styles.heroStats}>
               {[
                 { val: '12K+', label: 'Notes Shared' },
-                { val: '3.8K', label: 'Students'     },
-                { val: '200+', label: 'Subjects'      },
+                { val: '3.8K', label: 'Students' },
+                { val: '200+', label: 'Subjects' },
               ].map(s => (
                 <div key={s.label}>
                   <div className={styles.heroStatVal}>{s.val}</div>
@@ -333,8 +333,8 @@ export default function LandingClient({ subjects }) {
               </div>
             </div>
             {[
-              { style: { top: '-18px', right: '-18px' },  icon: '✅', iconBg: 'var(--green-light)',  title: 'Admin Verified', sub: 'Quality guaranteed' },
-              { style: { bottom: '80px', left: '-24px' }, icon: '⬇', iconBg: 'var(--orange-light)', title: '348 Downloads',  sub: 'This week'          },
+              { style: { top: '-18px', right: '-18px' }, icon: '✅', iconBg: 'var(--green-light)', title: 'Admin Verified', sub: 'Quality guaranteed' },
+              { style: { bottom: '80px', left: '-24px' }, icon: '⬇', iconBg: 'var(--orange-light)', title: '348 Downloads', sub: 'This week' },
             ].map((p, i) => (
               <div key={i} className="clay-pill" style={{ position: 'absolute', background: 'white', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: '9px', zIndex: 3, ...p.style }}>
                 <div style={{ width: '30px', height: '30px', borderRadius: '9px', background: p.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>{p.icon}</div>
@@ -348,32 +348,32 @@ export default function LandingClient({ subjects }) {
         </div>
       </section>
 
-     {/* ===== FEATURES ===== */}
-<section className={styles.featuresSection} id="features">
-  <div className={styles.sectionInner}>
-    <div className={styles.sectionHeader}>
-      <h2 className={styles.sectionTitle}>Why Choose NoteSwap?</h2>
-      <p className={styles.sectionDesc}>Built specifically for Indian college students — quality, privacy, and ease all in one place.</p>
-    </div>
+      {/* ===== FEATURES ===== */}
+      <section className={styles.featuresSection} id="features">
+        <div className={styles.sectionInner}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Why Choose NoteSwap?</h2>
+            <p className={styles.sectionDesc}>Built specifically for Indian college students — quality, privacy, and ease all in one place.</p>
+          </div>
 
-    {/* ✅ Remove clay-sm from grid div — only on individual cards */}
-    <div className={styles.featuresGrid}>
-      {[
-        { icon: '✅', title: 'Admin Verified',      desc: 'Every note reviewed before going live. Quality and privacy guaranteed always.'   },
-        { icon: '📄', title: 'All File Types',      desc: 'PDF, images, Word, PowerPoint — share any type of study material easily.'        },
-        { icon: '🎓', title: 'Unit-wise Organised', desc: 'Notes grouped by subject, unit, semester and college for easy discovery.'        },
-        { icon: '🔒', title: 'Free Forever',        desc: 'No subscription, no paywall. 100% free for every student always.'                },
-      ].map(f => (
-        /* ✅ clay-sm only on individual card */
-        <div key={f.title} className={`${styles.featureCard} clay-sm`}>
-          <div className={styles.featureIcon}>{f.icon}</div>
-          <h3 className={styles.featureTitle}>{f.title}</h3>
-          <p className={styles.featureDesc}>{f.desc}</p>
+          {/* ✅ Remove clay-sm from grid div — only on individual cards */}
+          <div className={styles.featuresGrid}>
+            {[
+              { icon: '✅', title: 'Admin Verified', desc: 'Every note reviewed before going live. Quality and privacy guaranteed always.' },
+              { icon: '📄', title: 'All File Types', desc: 'PDF, images, Word, PowerPoint — share any type of study material easily.' },
+              { icon: '🎓', title: 'Unit-wise Organised', desc: 'Notes grouped by subject, unit, semester and college for easy discovery.' },
+              { icon: '🔒', title: 'Free Forever', desc: 'No subscription, no paywall. 100% free for every student always.' },
+            ].map(f => (
+              /* ✅ clay-sm only on individual card */
+              <div key={f.title} className={`${styles.featureCard} clay-sm hover-float`}>
+                <div className={styles.featureIcon}>{f.icon}</div>
+                <h3 className={styles.featureTitle}>{f.title}</h3>
+                <p className={styles.featureDesc}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* ===== HOW IT WORKS ===== */}
       <section className={styles.howSection} id="how-it-works">
@@ -387,9 +387,9 @@ export default function LandingClient({ subjects }) {
             <div className={styles.stepsGrid}>
               <div className={styles.stepsLine} />
               {[
-                { icon: '👤', num: '01', numBg: 'var(--orange)', bg: 'var(--orange-light)', title: 'Create Account',       desc: 'Sign up with email or Google in seconds. No credit card needed.'              },
-                { icon: '📤', num: '02', numBg: 'var(--teal)',   bg: 'var(--teal-light)',   title: 'Upload Notes',         desc: 'Select subject, unit, semester and upload your PDF, images, Word or PPT.'    },
-                { icon: '🎯', num: '03', numBg: 'var(--green)',  bg: 'var(--green-light)',  title: 'Discover & Download',  desc: 'Browse admin-verified notes, filter by subject and download instantly.'      },
+                { icon: '👤', num: '01', numBg: 'var(--orange)', bg: 'var(--orange-light)', title: 'Create Account', desc: 'Sign up with email or Google in seconds. No credit card needed.' },
+                { icon: '📤', num: '02', numBg: 'var(--teal)', bg: 'var(--teal-light)', title: 'Upload Notes', desc: 'Select subject, unit, semester and upload your PDF, images, Word or PPT.' },
+                { icon: '🎯', num: '03', numBg: 'var(--green)', bg: 'var(--green-light)', title: 'Discover & Download', desc: 'Browse admin-verified notes, filter by subject and download instantly.' },
               ].map(s => (
                 <div key={s.title} className={styles.stepItem}>
                   <div className={`${styles.stepCircle} clay-circle`} style={{ background: s.bg }}>
@@ -415,15 +415,15 @@ export default function LandingClient({ subjects }) {
           <div className={styles.subjectsGrid}>
             {(subjects.length > 0 ? subjects.slice(0, 4) : [
               { name: 'Software Engineering', notesCount: 24, color: 'var(--orange)', icon: '📚' },
-              { name: 'Data Structures',      notesCount: 18, color: 'var(--teal)',   icon: '📊' },
-              { name: 'DBMS',                 notesCount: 15, color: 'var(--green)',  icon: '🗄️' },
-              { name: 'Computer Networks',    notesCount: 12, color: 'var(--pink)',   icon: '🌐' },
+              { name: 'Data Structures', notesCount: 18, color: 'var(--teal)', icon: '📊' },
+              { name: 'DBMS', notesCount: 15, color: 'var(--green)', icon: '🗄️' },
+              { name: 'Computer Networks', notesCount: 12, color: 'var(--pink)', icon: '🌐' },
             ]).map((s, i) => {
               const color = s.color || colors[i % colors.length]
-              const bg    = bgs[i % bgs.length]
+              const bg = bgs[i % bgs.length]
               return (
                 <Link href="/home" key={s.name || s._id} style={{ textDecoration: 'none' }}>
-                  <div className={`${styles.subjectCard} clay-sm`} style={{ borderTop: `4px solid ${color}` }}>
+                  <div className={`${styles.subjectCard} clay-sm hover-float`} style={{ borderTop: `4px solid ${color}` }}>
                     <div className={styles.subjectIcon} style={{ background: bg }}>{s.icon || '📚'}</div>
                     <div className={styles.subjectName}>{s.name}</div>
                     <div className={styles.subjectCount}>{s.notesCount || 0} notes</div>
@@ -447,11 +447,11 @@ export default function LandingClient({ subjects }) {
           </div>
           <div className={styles.reviewsGrid}>
             {[
-              { name: 'Riya Sharma', role: 'B.Tech CSE · RGPV Bhopal',     av: 'RS', avBg: 'linear-gradient(135deg,var(--orange),#FF8C00)',   stars: 5, featured: false, text: '"NoteSwap completely changed how I study. Found amazing Software Engineering notes just before my end sem. Absolutely love this platform!"' },
-              { name: 'Arjun Kumar', role: 'B.Tech IT · AKTU Lucknow',      av: 'AK', avBg: 'rgba(255,255,255,0.3)',                            stars: 5, featured: true,  text: '"Admin verification means I can trust every note. My DBMS notes got 200+ downloads — feels amazing helping fellow students pass their exams!"' },
+              { name: 'Riya Sharma', role: 'B.Tech CSE · RGPV Bhopal', av: 'RS', avBg: 'linear-gradient(135deg,var(--orange),#FF8C00)', stars: 5, featured: false, text: '"NoteSwap completely changed how I study. Found amazing Software Engineering notes just before my end sem. Absolutely love this platform!"' },
+              { name: 'Arjun Kumar', role: 'B.Tech IT · AKTU Lucknow', av: 'AK', avBg: 'rgba(255,255,255,0.3)', stars: 5, featured: true, text: '"Admin verification means I can trust every note. My DBMS notes got 200+ downloads — feels amazing helping fellow students pass their exams!"' },
               { name: 'Priya Mehta', role: 'B.Tech CSE · Mumbai University', av: 'PM', avBg: 'linear-gradient(135deg,var(--teal),var(--green))', stars: 4, featured: false, text: '"The unit-wise organisation is brilliant. I find exactly Unit 3 DBMS notes in seconds. No other platform does this as well as NoteSwap!"' },
             ].map(r => (
-              <div key={r.name} className={`${styles.reviewCard} clay-sm`} style={{ background: r.featured ? 'var(--orange)' : 'white' }}>
+              <div key={r.name} className={`${styles.reviewCard} clay-sm hover-float`} style={{ background: r.featured ? 'var(--orange)' : 'white' }}>
                 <div className={styles.reviewStars} style={{ color: r.featured ? 'white' : 'var(--orange)' }}>
                   {'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}
                 </div>
@@ -473,9 +473,9 @@ export default function LandingClient({ subjects }) {
       <section className={styles.ctaSection}>
         <div className={`${styles.ctaCard} clay`}>
           {[
-            { w: 200, h: 200, bg: 'var(--orange-light)', top: '-70px',  left: '-60px'    },
-            { w: 160, h: 160, bg: 'var(--green-light)',  bottom: '-50px', right: '-50px' },
-            { w: 100, h: 100, bg: 'var(--teal-light)',   top: '30px',   right: '200px'   },
+            { w: 200, h: 200, bg: 'var(--orange-light)', top: '-70px', left: '-60px' },
+            { w: 160, h: 160, bg: 'var(--green-light)', bottom: '-50px', right: '-50px' },
+            { w: 100, h: 100, bg: 'var(--teal-light)', top: '30px', right: '200px' },
           ].map((b, i) => (
             <div key={i} style={{ position: 'absolute', borderRadius: '50%', width: b.w, height: b.h, background: b.bg, top: b.top, left: b.left, right: b.right, bottom: b.bottom, opacity: 0.6 }} />
           ))}
@@ -507,9 +507,9 @@ export default function LandingClient({ subjects }) {
               <p className={styles.footerBrandDesc}>India's leading student notes sharing platform — verified, organised, and completely free for all college students.</p>
               <div className={styles.footerSocials}>
                 {[
-                  { label: 'f',  href: 'https://facebook.com'  },
-                  { label: 'X',  href: 'https://twitter.com'   },
-                  { label: 'in', href: 'https://linkedin.com'  },
+                  { label: 'f', href: 'https://facebook.com' },
+                  { label: 'X', href: 'https://twitter.com' },
+                  { label: 'in', href: 'https://linkedin.com' },
                   { label: 'ig', href: 'https://instagram.com' },
                 ].map(s => (
                   <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-btn">{s.label}</a>
@@ -522,9 +522,9 @@ export default function LandingClient({ subjects }) {
               <div className={styles.footerColHead}>Platform</div>
               <ul className={styles.footerLinks}>
                 {[
-                  { label: 'Browse Notes', href: '/home'         },
-                  { label: 'Upload Notes', href: '/upload'       },
-                  { label: 'Subjects',     href: '/home'         },
+                  { label: 'Browse Notes', href: '/home' },
+                  { label: 'Upload Notes', href: '/upload' },
+                  { label: 'Subjects', href: '/home' },
                   { label: 'How it Works', href: '#how-it-works' },
                 ].map(l => (
                   <li key={l.label}>
@@ -539,10 +539,10 @@ export default function LandingClient({ subjects }) {
               <div className={styles.footerColHead}>Company</div>
               <ul className={styles.footerLinks}>
                 {[
-                  { label: 'About Us', key: 'about'   },
-                  { label: 'Blog',     key: 'blog'    },
-                  { label: 'Careers',  key: 'careers' },
-                  { label: 'Contact',  key: 'contact' },
+                  { label: 'About Us', key: 'about' },
+                  { label: 'Blog', key: 'blog' },
+                  { label: 'Careers', key: 'careers' },
+                  { label: 'Contact', key: 'contact' },
                 ].map(l => (
                   <li key={l.label}>
                     <button onClick={() => setModal(l.key)} className={styles.footerLinkBtn}>{l.label}</button>
@@ -556,10 +556,10 @@ export default function LandingClient({ subjects }) {
               <div className={styles.footerColHead}>Legal</div>
               <ul className={styles.footerLinks}>
                 {[
-                  { label: 'Privacy Policy',   key: 'privacy' },
-                  { label: 'Terms of Service', key: 'terms'   },
-                  { label: 'Report Issue',     key: 'report'  },
-                  { label: 'Help Center',      key: 'help'    },
+                  { label: 'Privacy Policy', key: 'privacy' },
+                  { label: 'Terms of Service', key: 'terms' },
+                  { label: 'Report Issue', key: 'report' },
+                  { label: 'Help Center', key: 'help' },
                 ].map(l => (
                   <li key={l.label}>
                     <button onClick={() => setModal(l.key)} className={styles.footerLinkBtn}>{l.label}</button>

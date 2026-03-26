@@ -12,15 +12,15 @@ export default function UploadPage() {
   const router = useRouter()
   const fileInputRef = useRef(null)
 
-  const [subjects, setSubjects]     = useState([])
+  const [subjects, setSubjects] = useState([])
   const [selectedFile, setSelectedFile] = useState(null)
   const [customSubject, setCustomSubject] = useState(false)
-  const [customUnit, setCustomUnit]       = useState(false)
-  const [dragOver, setDragOver]     = useState(false)
-  const [uploading, setUploading]   = useState(false)
+  const [customUnit, setCustomUnit] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [success, setSuccess]       = useState(false)
-  const [error, setError]           = useState('')
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const [form, setForm] = useState({
     title: '',
@@ -55,28 +55,28 @@ export default function UploadPage() {
   }
 
   // When subject changes, load its units
- const handleSubjectChange = (e) => {
-  const subjectId = e.target.value
-  if (subjectId === '__custom__') {
-    setCustomSubject(true)
-    setForm({ ...form, subject: '', unit: '' })
-    setUnits([])
-    return
+  const handleSubjectChange = (e) => {
+    const subjectId = e.target.value
+    if (subjectId === '__custom__') {
+      setCustomSubject(true)
+      setForm({ ...form, subject: '', unit: '' })
+      setUnits([])
+      return
+    }
+    setForm({ ...form, subject: subjectId, unit: '' })
+    const subject = subjects.find(s => s._id === subjectId)
+    setUnits(subject?.units || [])
   }
-  setForm({ ...form, subject: subjectId, unit: '' })
-  const subject = subjects.find(s => s._id === subjectId)
-  setUnits(subject?.units || [])
-}
 
   const handleChange = (e) => {
-  const { name, value } = e.target
-  if (name === 'unit' && value === '__custom__') {
-    setCustomUnit(true)
-    setForm({ ...form, unit: '' })
-    return
+    const { name, value } = e.target
+    if (name === 'unit' && value === '__custom__') {
+      setCustomUnit(true)
+      setForm({ ...form, unit: '' })
+      return
+    }
+    setForm({ ...form, [name]: value })
   }
-  setForm({ ...form, [name]: value })
-}
 
   // File selection
   const handleFileSelect = (file) => {
@@ -110,10 +110,10 @@ export default function UploadPage() {
     e.preventDefault()
     if (!selectedFile) { setError('Please select a file to upload.'); return }
     if (!form.title.trim()) { setError('Please enter a title.'); return }
-   if (!form.subject && !form.subjectCustom?.trim()) {
-  setError('Please select or enter a subject.')
-  return
-}
+    if (!form.subject && !form.subjectCustom?.trim()) {
+      setError('Please select or enter a subject.')
+      return
+    }
     if (!form.semester) { setError('Please select a semester.'); return }
     if (!form.college.trim()) { setError('Please enter your college name.'); return }
 
@@ -127,10 +127,10 @@ export default function UploadPage() {
       formData.append('title', form.title)
       formData.append('description', form.description)
       formData.append('subject', customSubject ? (form.subjectCustom || '').trim() : form.subject)
-     formData.append('unit', form.unit || 'General')
+      formData.append('unit', form.unit || 'General')
       formData.append('semester', form.semester)
-      
-formData.append('year', form.year || 'Not specified')
+
+      formData.append('year', form.year || 'Not specified')
       formData.append('college', form.college)
       formData.append('tags', form.tags)
 
@@ -179,13 +179,13 @@ formData.append('year', form.year || 'Not specified')
   }
 
   // Checklist
-const checklist = [
-  { label: 'File uploaded',     done: !!selectedFile },
-  { label: 'Title added',       done: form.title.trim().length > 0 },
-  { label: 'Subject selected',  done: !!form.subject || !!form.subjectCustom?.trim() },
-  { label: 'Semester selected', done: !!form.semester },
-  { label: 'College entered',   done: form.college.trim().length > 0 },
-]
+  const checklist = [
+    { label: 'File uploaded', done: !!selectedFile },
+    { label: 'Title added', done: form.title.trim().length > 0 },
+    { label: 'Subject selected', done: !!form.subject || !!form.subjectCustom?.trim() },
+    { label: 'Semester selected', done: !!form.semester },
+    { label: 'College entered', done: form.college.trim().length > 0 },
+  ]
   const checklistDone = checklist.filter(c => c.done).length
 
   if (authLoading || (!authLoading && !user)) {
@@ -202,12 +202,12 @@ const checklist = [
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
         <div className="clay" style={{
-          background: 'white', 
+          background: 'white',
           // clamp() automatically scales these down on smaller screens!
-          borderRadius: 'clamp(20px, 5vw, 28px)', 
+          borderRadius: 'clamp(20px, 5vw, 28px)',
           padding: 'clamp(1.5rem, 6vw, 3rem)',
-          textAlign: 'center', 
-          maxWidth: '480px', 
+          textAlign: 'center',
+          maxWidth: '480px',
           width: '100%',
         }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
@@ -229,12 +229,12 @@ const checklist = [
               Admin will review your notes for quality and accuracy. You'll be able to see the status in your profile.
             </div>
           </div>
-          
+
           {/* Automatically stacks buttons on mobile and sits them side-by-side on desktop */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
-            gap: '10px' 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '10px'
           }}>
             <Link href="/home" style={{ textDecoration: 'none' }}>
               <button className="btn-orange" style={{ width: '100%', padding: '11px 24px', justifyContent: 'center' }}>
@@ -538,101 +538,101 @@ const checklist = [
               </div>
 
               <div className="form-grid-2">
-  <div>
-    <label className="field-label">Subject <span style={{ color: 'var(--orange)' }}>*</span></label>
-    {!customSubject ? (
-      <select
-        name="subject" className="input-clay"
-        value={form.subject} onChange={handleSubjectChange}
-        style={{ cursor: 'pointer' }}
-      >
-        <option value="">Select subject...</option>
-        {subjects.map(s => (
-          <option key={s._id} value={s._id}>{s.name}</option>
-        ))}
-        <option value="__custom__">+ Type manually...</option>
-      </select>
-    ) : (
-      <div style={{ display: 'flex', gap: '6px' }}>
-        <input
-          name="subjectCustom"
-          className="input-clay"
-          placeholder="Type subject name..."
-          value={form.subjectCustom || ''}
-          onChange={e => setForm({ ...form, subjectCustom: e.target.value })}
-          style={{ flex: 1, minWidth: '0' }}
-        />
-        <button
-          type="button"
-          onClick={() => { setCustomSubject(false); setForm({ ...form, subject: '', subjectCustom: '' }) }}
-          style={{
-            padding: '0 12px', borderRadius: '12px',
-            border: 'var(--clay-border)', background: 'white',
-            cursor: 'pointer', fontSize: '0.78rem', fontWeight: 700,
-            color: 'var(--muted)', boxShadow: 'var(--clay-shadow-sm)',
-            whiteSpace: 'nowrap',
-          }}
-        >← Back</button>
-      </div>
-    )}
-    {!customSubject && (
-      <div
-        onClick={() => setCustomSubject(true)}
-        style={{ fontSize: '0.72rem', color: 'var(--orange)', fontWeight: 700, marginTop: '4px', cursor: 'pointer' }}
-      >
-        ✏️ Not in list? Type manually
-      </div>
-    )}
-  </div>
+                <div>
+                  <label className="field-label">Subject <span style={{ color: 'var(--orange)' }}>*</span></label>
+                  {!customSubject ? (
+                    <select
+                      name="subject" className="input-clay"
+                      value={form.subject} onChange={handleSubjectChange}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <option value="">Select subject...</option>
+                      {subjects.map(s => (
+                        <option key={s._id} value={s._id}>{s.name}</option>
+                      ))}
+                      <option value="__custom__">+ Type manually...</option>
+                    </select>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input
+                        name="subjectCustom"
+                        className="input-clay"
+                        placeholder="Type subject name..."
+                        value={form.subjectCustom || ''}
+                        onChange={e => setForm({ ...form, subjectCustom: e.target.value })}
+                        style={{ flex: 1, minWidth: '0' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setCustomSubject(false); setForm({ ...form, subject: '', subjectCustom: '' }) }}
+                        style={{
+                          padding: '0 12px', borderRadius: '12px',
+                          border: 'var(--clay-border)', background: 'white',
+                          cursor: 'pointer', fontSize: '0.78rem', fontWeight: 700,
+                          color: 'var(--muted)', boxShadow: 'var(--clay-shadow-sm)',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >← Back</button>
+                    </div>
+                  )}
+                  {!customSubject && (
+                    <div
+                      onClick={() => setCustomSubject(true)}
+                      style={{ fontSize: '0.72rem', color: 'var(--orange)', fontWeight: 700, marginTop: '4px', cursor: 'pointer' }}
+                    >
+                      ✏️ Not in list? Type manually
+                    </div>
+                  )}
+                </div>
 
-  <div>
-    <label className="field-label">Unit / Chapter</label>
-    {!customUnit ? (
-      <select
-        name="unit" className="input-clay"
-        value={form.unit} onChange={handleChange}
-        style={{ cursor: 'pointer' }}
-        disabled={!form.subject && !customSubject}
-      >
-        <option value="">Select unit...</option>
-        {units.map((u, i) => (
-          <option key={i} value={u.name || u}>{u.name || u}</option>
-        ))}
-        <option value="__custom__">+ Type manually...</option>
-      </select>
-    ) : (
-      <div style={{ display: 'flex', gap: '6px' }}>
-        <input
-          name="unit"
-          className="input-clay"
-          placeholder="e.g. Unit 2 — SDLC Models"
-          value={form.unit === '__custom__' ? '' : form.unit}
-          onChange={e => setForm({ ...form, unit: e.target.value })}
-          style={{ flex: 1, minWidth: '0' }}
-        />
-        <button
-          type="button"
-          onClick={() => { setCustomUnit(false); setForm({ ...form, unit: '' }) }}
-          style={{
-            padding: '0 12px', borderRadius: '12px',
-            border: 'var(--clay-border)', background: 'white',
-            cursor: 'pointer', fontSize: '0.78rem', fontWeight: 700,
-            color: 'var(--muted)', boxShadow: 'var(--clay-shadow-sm)',
-            whiteSpace: 'nowrap',
-          }}
-        >← Back</button>
-      </div>
-    )}
-    {!customUnit && (
-      <div
-        onClick={() => setCustomUnit(true)}
-        style={{ fontSize: '0.72rem', color: 'var(--orange)', fontWeight: 700, marginTop: '4px', cursor: 'pointer' }}
-      >
-        ✏️ Not in list? Type manually
-      </div>
-    )}
-  </div>
-</div>
+                <div>
+                  <label className="field-label">Unit / Chapter</label>
+                  {!customUnit ? (
+                    <select
+                      name="unit" className="input-clay"
+                      value={form.unit} onChange={handleChange}
+                      style={{ cursor: 'pointer' }}
+                      disabled={!form.subject && !customSubject}
+                    >
+                      <option value="">Select unit...</option>
+                      {units.map((u, i) => (
+                        <option key={i} value={u.name || u}>{u.name || u}</option>
+                      ))}
+                      <option value="__custom__">+ Type manually...</option>
+                    </select>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input
+                        name="unit"
+                        className="input-clay"
+                        placeholder="e.g. Unit 2 — SDLC Models"
+                        value={form.unit === '__custom__' ? '' : form.unit}
+                        onChange={e => setForm({ ...form, unit: e.target.value })}
+                        style={{ flex: 1, minWidth: '0' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setCustomUnit(false); setForm({ ...form, unit: '' }) }}
+                        style={{
+                          padding: '0 12px', borderRadius: '12px',
+                          border: 'var(--clay-border)', background: 'white',
+                          cursor: 'pointer', fontSize: '0.78rem', fontWeight: 700,
+                          color: 'var(--muted)', boxShadow: 'var(--clay-shadow-sm)',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >← Back</button>
+                    </div>
+                  )}
+                  {!customUnit && (
+                    <div
+                      onClick={() => setCustomUnit(true)}
+                      style={{ fontSize: '0.72rem', color: 'var(--orange)', fontWeight: 700, marginTop: '4px', cursor: 'pointer' }}
+                    >
+                      ✏️ Not in list? Type manually
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div className="form-grid-2">
                 <div>

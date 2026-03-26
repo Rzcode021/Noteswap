@@ -7,12 +7,12 @@ import { loginWithEmail, loginWithGoogle } from '../../firebase/auth.firebase'
 import { useAuth } from '../../context/AuthContext'
 
 export default function LoginPage() {
-  const router                         = useRouter()
+  const router = useRouter()
   const { user, loading: authLoading } = useAuth()
-  const [email, setEmail]              = useState('')
-  const [password, setPassword]        = useState('')
-  const [submitting, setSubmitting]    = useState(false)
-  const [error, setError]              = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!authLoading && user) router.replace('/home')
@@ -52,15 +52,15 @@ export default function LoginPage() {
 
   const getFriendlyError = (code) => {
     switch (code) {
-      case 'auth/user-not-found':         return 'No account found with this email.'
-      case 'auth/wrong-password':         return 'Incorrect password. Please try again.'
-      case 'auth/invalid-credential':     return 'Invalid email or password.'
-      case 'auth/invalid-email':          return 'Please enter a valid email address.'
-      case 'auth/too-many-requests':      return 'Too many attempts. Try again later.'
-      case 'auth/popup-closed-by-user':   return 'Google sign-in was cancelled.'
-      case 'auth/popup-blocked':          return 'Popup blocked. Please allow popups for this site.'
+      case 'auth/user-not-found': return 'No account found with this email.'
+      case 'auth/wrong-password': return 'Incorrect password. Please try again.'
+      case 'auth/invalid-credential': return 'Invalid email or password.'
+      case 'auth/invalid-email': return 'Please enter a valid email address.'
+      case 'auth/too-many-requests': return 'Too many attempts. Try again later.'
+      case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.'
+      case 'auth/popup-blocked': return 'Popup blocked. Please allow popups for this site.'
       case 'auth/network-request-failed': return 'Network error. Check your connection.'
-      default:                            return `Error: ${code}`
+      default: return `Error: ${code}`
     }
   }
 
@@ -160,9 +160,9 @@ export default function LoginPage() {
             animation: 'floatCard 4s ease-in-out infinite',
           }}>
             {[
-              { w: 180, h: 180, top: '-60px',  right: '-40px' },
+              { w: 180, h: 180, top: '-60px', right: '-40px' },
               { w: 120, h: 120, bottom: '-30px', left: '-20px' },
-              { w: 80,  h: 80,  top: '40%',    right: '20px'  },
+              { w: 80, h: 80, top: '40%', right: '20px' },
             ].map((b, i) => (
               <div key={i} style={{
                 position: 'absolute', borderRadius: '50%',

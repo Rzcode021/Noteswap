@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { resetPassword } from '../../../firebase/auth.firebase'
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail]     = useState('')
+  const [email, setEmail] = useState('')
   const [sending, setSending] = useState(false)
-  const [sent, setSent]       = useState(false)
-  const [error, setError]     = useState('')
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,16 +27,16 @@ export default function ForgotPasswordPage() {
 
   const getFriendlyError = (code) => {
     switch (code) {
-      case 'auth/user-not-found':   return 'No account found with this email address.'
-      case 'auth/invalid-email':    return 'Please enter a valid email address.'
+      case 'auth/user-not-found': return 'No account found with this email address.'
+      case 'auth/invalid-email': return 'Please enter a valid email address.'
       case 'auth/too-many-requests': return 'Too many attempts. Please try again later.'
-      default:                      return `Error: ${code}`
+      default: return `Error: ${code}`
     }
   }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      
+
       {/* ===== RESPONSIVE STYLES ===== */}
       <style>{`
         .forgot-nav {

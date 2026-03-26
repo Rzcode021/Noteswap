@@ -13,16 +13,16 @@ export default function NoteDetailPage({ params }) {
   const router = useRouter()
   const { id } = use(params)
 
-  const [note, setNote]               = useState(null)
-  const [comments, setComments]       = useState([])
+  const [note, setNote] = useState(null)
+  const [comments, setComments] = useState([])
   const [commentText, setCommentText] = useState('')
-  const [loading, setLoading]         = useState(true)
-  const [liked, setLiked]             = useState(false)
-  const [bookmarked, setBookmarked]   = useState(false)
-  const [likesCount, setLikesCount]   = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [liked, setLiked] = useState(false)
+  const [bookmarked, setBookmarked] = useState(false)
+  const [likesCount, setLikesCount] = useState(0)
   const [actionLoading, setActionLoading] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
-  const [error, setError]             = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login')
@@ -39,7 +39,7 @@ export default function NoteDetailPage({ params }) {
     setLoading(true)
     try {
       const res = await getNoteById(id)
-      const n   = res.data.data
+      const n = res.data.data
       setNote(n)
       setLikesCount(n.likesCount || 0)
       setLiked(n.likes?.includes(user?._id) || false)
@@ -61,31 +61,31 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
- const handleLike = async () => {
-  if (actionLoading) return
+  const handleLike = async () => {
+    if (actionLoading) return
 
-  setActionLoading('like')
+    setActionLoading('like')
 
-  // ✅ Optimistic UI
-  const prevLiked = liked
-  const prevCount = likesCount
+    // ✅ Optimistic UI
+    const prevLiked = liked
+    const prevCount = likesCount
 
-  const newLiked = !liked
-  setLiked(newLiked)
-  setLikesCount(prev => newLiked ? prev + 1 : prev - 1)
+    const newLiked = !liked
+    setLiked(newLiked)
+    setLikesCount(prev => newLiked ? prev + 1 : prev - 1)
 
-  try {
-    await likeNote(id)
-  } catch (err) {
-    console.error('Like error:', err)
+    try {
+      await likeNote(id)
+    } catch (err) {
+      console.error('Like error:', err)
 
-    // ❗ rollback
-    setLiked(prevLiked)
-    setLikesCount(prevCount)
-  } finally {
-    setActionLoading('')
+      // ❗ rollback
+      setLiked(prevLiked)
+      setLikesCount(prevCount)
+    } finally {
+      setActionLoading('')
+    }
   }
-}
 
   const handleBookmark = async () => {
     if (actionLoading) return
@@ -105,15 +105,15 @@ export default function NoteDetailPage({ params }) {
     setActionLoading('download')
     try {
       const res = await downloadNote(id)
-      const fileUrl  = res.data.fileUrl
+      const fileUrl = res.data.fileUrl
       const filename = note.originalName || `${note.title}.${note.fileType}`
 
       const response = await fetch(fileUrl)
-      const blob     = await response.blob()
-      const blobUrl  = window.URL.createObjectURL(blob)
-      const link     = document.createElement('a')
-      link.href      = blobUrl
-      link.download  = filename
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -127,39 +127,39 @@ export default function NoteDetailPage({ params }) {
   }
 
   const handleAddComment = async (e) => {
-  e.preventDefault()
-  if (!commentText.trim()) return
+    e.preventDefault()
+    if (!commentText.trim()) return
 
-  const tempComment = {
-    _id: Date.now(),
-    text: commentText,
-    user: { name: user.name, _id: user._id },
-    likesCount: 0,
-    createdAt: new Date()
+    const tempComment = {
+      _id: Date.now(),
+      text: commentText,
+      user: { name: user.name, _id: user._id },
+      likesCount: 0,
+      createdAt: new Date()
+    }
+
+    // ✅ instant UI update
+    setComments(prev => [tempComment, ...prev])
+    setCommentText('')
+    setCommentLoading(true)
+
+    try {
+      const res = await addComment(id, tempComment.text)
+
+      // replace temp with real
+      setComments(prev =>
+        prev.map(c => c._id === tempComment._id ? res.data.data : c)
+      )
+
+    } catch (err) {
+      console.error('Add comment error:', err)
+
+      // rollback
+      setComments(prev => prev.filter(c => c._id !== tempComment._id))
+    } finally {
+      setCommentLoading(false)
+    }
   }
-
-  // ✅ instant UI update
-  setComments(prev => [tempComment, ...prev])
-  setCommentText('')
-  setCommentLoading(true)
-
-  try {
-    const res = await addComment(id, tempComment.text)
-
-    // replace temp with real
-    setComments(prev =>
-      prev.map(c => c._id === tempComment._id ? res.data.data : c)
-    )
-
-  } catch (err) {
-    console.error('Add comment error:', err)
-
-    // rollback
-    setComments(prev => prev.filter(c => c._id !== tempComment._id))
-  } finally {
-    setCommentLoading(false)
-  }
-}
 
 
   const handleDeleteComment = async (commentId) => {
@@ -171,38 +171,38 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
- const handleLikeComment = async (commentId) => {
+  const handleLikeComment = async (commentId) => {
 
-  // ✅ instant UI update
-  setComments(prev =>
-    prev.map(c =>
-      c._id === commentId
-        ? { ...c, likesCount: (c.likesCount || 0) + 1 }
-        : c
-    )
-  )
-
-  try {
-    await likeComment(commentId)
-  } catch (err) {
-    console.error('Like comment error:', err)
-
-    // rollback
+    // ✅ instant UI update
     setComments(prev =>
       prev.map(c =>
         c._id === commentId
-          ? { ...c, likesCount: (c.likesCount || 1) - 1 }
+          ? { ...c, likesCount: (c.likesCount || 0) + 1 }
           : c
       )
     )
+
+    try {
+      await likeComment(commentId)
+    } catch (err) {
+      console.error('Like comment error:', err)
+
+      // rollback
+      setComments(prev =>
+        prev.map(c =>
+          c._id === commentId
+            ? { ...c, likesCount: (c.likesCount || 1) - 1 }
+            : c
+        )
+      )
+    }
   }
-}
 
   const getFileIcon = (type) => {
-    if (type === 'pdf')   return '📕'
+    if (type === 'pdf') return '📕'
     if (type === 'image') return '🖼️'
-    if (type === 'docx')  return '📘'
-    if (type === 'pptx')  return '📊'
+    if (type === 'docx') return '📘'
+    if (type === 'pptx') return '📊'
     return '📄'
   }
 
@@ -213,7 +213,7 @@ export default function NoteDetailPage({ params }) {
   }
 
   const colors = ['var(--orange)', 'var(--teal)', 'var(--green)', 'var(--pink)']
-  const bgs    = ['var(--orange-light)', 'var(--teal-light)', 'var(--green-light)', 'var(--pink-light)']
+  const bgs = ['var(--orange-light)', 'var(--teal-light)', 'var(--green-light)', 'var(--pink-light)']
 
   if (authLoading || (!authLoading && !user)) {
     return (
@@ -383,10 +383,10 @@ export default function NoteDetailPage({ params }) {
           <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap', marginBottom: '1rem' }}>
             {[
               { label: note.subject?.name, bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
-              { label: note.unit,          bg: 'var(--bg)',           color: 'var(--mid)'        },
-              { label: note.semester,      bg: 'var(--bg)',           color: 'var(--mid)'        },
-              { label: '✅ Verified',      bg: 'var(--green-light)',  color: 'var(--green)'       },
-              { label: note.fileType?.toUpperCase(), bg: 'var(--bg)', color: 'var(--mid)'        },
+              { label: note.unit, bg: 'var(--bg)', color: 'var(--mid)' },
+              { label: note.semester, bg: 'var(--bg)', color: 'var(--mid)' },
+              { label: '✅ Verified', bg: 'var(--green-light)', color: 'var(--green)' },
+              { label: note.fileType?.toUpperCase(), bg: 'var(--bg)', color: 'var(--mid)' },
             ].filter(t => t.label).map((t, i) => (
               <span key={i} style={{
                 fontSize: '0.72rem', fontWeight: 900, padding: '5px 14px',
@@ -450,7 +450,7 @@ export default function NoteDetailPage({ params }) {
                 </div>
               </div>
             </div>
-            
+
             <div style={{ display: 'flex', gap: '1.5rem' }}>
               {[
                 { val: note.uploadedBy?.totalUploads || 0, label: 'Notes' },
@@ -700,13 +700,13 @@ export default function NoteDetailPage({ params }) {
               📋 Note Details
             </div>
             {[
-              { label: 'Subject',  val: note.subject?.name },
-              { label: 'Unit',     val: note.unit          },
-              { label: 'Semester', val: note.semester      },
-              { label: 'Year',     val: note.year          },
-              { label: 'College',  val: note.college       },
-              { label: 'Type',     val: note.fileType?.toUpperCase() },
-              { label: 'Size',     val: formatFileSize(note.fileSize) },
+              { label: 'Subject', val: note.subject?.name },
+              { label: 'Unit', val: note.unit },
+              { label: 'Semester', val: note.semester },
+              { label: 'Year', val: note.year },
+              { label: 'College', val: note.college },
+              { label: 'Type', val: note.fileType?.toUpperCase() },
+              { label: 'Size', val: formatFileSize(note.fileSize) },
             ].filter(r => r.val).map((r, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -725,10 +725,10 @@ export default function NoteDetailPage({ params }) {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               {[
-                { val: note.viewsCount     || 0, label: 'Views',     bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
-                { val: note.downloadsCount || 0, label: 'Downloads', bg: 'var(--green-light)',  color: 'var(--green)'       },
-                { val: likesCount,               label: 'Likes',     bg: 'var(--pink-light)',   color: 'var(--pink)'        },
-                { val: comments.length,          label: 'Comments',  bg: 'var(--teal-light)',   color: 'var(--teal)'        },
+                { val: note.viewsCount || 0, label: 'Views', bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
+                { val: note.downloadsCount || 0, label: 'Downloads', bg: 'var(--green-light)', color: 'var(--green)' },
+                { val: likesCount, label: 'Likes', bg: 'var(--pink-light)', color: 'var(--pink)' },
+                { val: comments.length, label: 'Comments', bg: 'var(--teal-light)', color: 'var(--teal)' },
               ].map(s => (
                 <div key={s.label} style={{
                   borderRadius: '10px', padding: '0.8rem', textAlign: 'center',
