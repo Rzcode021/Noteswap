@@ -1,0 +1,11 @@
+import { NextResponse } from 'next/server'
+
+export function middleware() {
+  // Empty middleware for Vercel compatibility
+  // Next.js 16 deprecated middleware.js - using proxy config instead
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: []
+}
