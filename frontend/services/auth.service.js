@@ -1,5 +1,5 @@
 import api from './api'
 
-export const syncUser   = (extraData = {}) => api.post('/auth/sync', extraData)
-export const getMe      = ()               => api.get('/auth/me')
-export const logoutUser = ()               => api.post('/auth/logout')
+export const syncUser   = (extraData = {}) => api.post('/api/auth/sync', extraData)
+export const getMe      = ()               => api.get('/api/auth/me')
+export const logoutUser = ()               => api.post('/api/auth/logout')
