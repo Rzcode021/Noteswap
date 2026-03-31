@@ -1,12 +1,13 @@
 const admin = require('firebase-admin');
-const path = require('path');
+const dotenv = require('dotenv');
 
-// download your serviceAccountKey.json from Firebase console
-// Firebase Console → Project Settings → Service Accounts → Generate new private key
-const serviceAccount = require(path.join(__dirname, '../serviceAccountKey.json'));
-
+dotenv.config();
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  }),
 });
 
 module.exports = admin;
