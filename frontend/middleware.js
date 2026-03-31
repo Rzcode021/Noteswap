@@ -4,6 +4,6 @@ export function middleware(request) {
   return NextResponse.next()
 }
 
-// export const config = {
-//   matcher: [],
-// }
+export const config = {
+  matcher: ['/((?!_next|favicon.ico).*)'],
+}
