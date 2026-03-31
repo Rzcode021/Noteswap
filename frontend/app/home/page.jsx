@@ -380,7 +380,7 @@ export default function HomePage() {
               className="btn-orange upload-btn"
               style={{ padding: "8px 18px", fontSize: "0.84rem", whiteSpace: "nowrap" }}
             >
-              + Upload<span className="hide-on-mobile">&nbsp;Notes</span>
+              +Upload<span className="hide-on-mobile">Notes</span>
             </button>
           </Link>
          {/* ✅ Notification Bell with dropdown */}
