@@ -1,4 +1,4 @@
-import api from '../api'
+import api from './api'
 
 export const getProfile = () => api.get('/api/users/profile')
 export const updateProfile = (data) => api.put('/api/users/profile', data)

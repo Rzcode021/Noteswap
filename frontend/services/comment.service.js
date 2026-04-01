@@ -1,4 +1,4 @@
-import api from '../api'
+import api from './api'
 
 export const getComments = (noteId) => api.get(`/api/comments/${noteId}`)
 export const addComment = (noteId, text) => api.post(`/api/comments/${noteId}`, { text })

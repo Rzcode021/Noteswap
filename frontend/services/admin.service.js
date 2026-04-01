@@ -1,4 +1,4 @@
-import api from '../api'
+import api from './api'
 
 export const getStats = () => api.get('/api/admin/stats')
 export const getPending = (params) => api.get('/api/admin/pending', { params })

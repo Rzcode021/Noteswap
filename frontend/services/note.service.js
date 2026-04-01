@@ -1,4 +1,4 @@
-import api from '../api'
+import api from './api'
 
 export const getNotes = (params) => api.get('/api/notes', { params })
 export const getNoteById = (id) => api.get(`/api/notes/${id}`)
