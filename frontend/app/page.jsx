@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { getSubjects } from "../services/subject.service";
 import LandingClient from "./LandingClient";
 
 export const revalidate = 3600;
@@ -19,8 +17,13 @@ export const metadata = {
 
 async function getSubjectsData() {
   try {
-    const res = await getSubjects();
-    return res.data.data;
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+    const res = await fetch(`${baseUrl}/api/subjects`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || [];
   } catch {
     return [];
   }
