@@ -8,5 +8,5 @@ export const approveNote     = (id)         => api.put(`/api/admin/${id}/approve
 export const rejectNote      = (id, reason) => api.put(`/api/admin/${id}/reject`, { reason })
 export const deleteUser      = (id)         => api.delete(`/api/admin/users/${id}`)
 export const deleteNoteAdmin = (id) => api.delete(`/api/admin/notes/${id}`)
-export const disableUser     = (id)         => api.put(`/admin/users/${id}/disable`)
-export const enableUser      = (id)         => api.put(`/admin/users/${id}/enable`)
+export const disableUser     = (id)         => api.put(`/api/admin/users/${id}/disable`)
+export const enableUser      = (id)         => api.put(`/api/admin/users/${id}/enable`)

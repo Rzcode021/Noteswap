@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSubjects } from "../services/subject.service";
-import LandingClient from "./landing/LandingClient";
+import LandingClient from "./LandingClient";
 
 export const revalidate = 3600;
 

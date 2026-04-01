@@ -327,7 +327,7 @@ const handleDownload = async (note) => {
                 <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>Admin Panel</div>
               </div>
             </Link>
-            <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--muted)', cursor: 'pointer', paddingRight: '1rem', display: isSidebarOpen && window?.innerWidth <= 768 ? 'block' : 'none' }}>✕</button>
+            <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--muted)', cursor: 'pointer', paddingRight: '1rem', display: isSidebarOpen && typeof window !== 'undefined' && window.innerWidth <= 768 ? 'block' : 'none' }}>✕</button>
           </div>
           <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }} />
 
