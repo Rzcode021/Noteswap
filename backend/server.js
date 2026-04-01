@@ -17,7 +17,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://your-app.vercel.app',
+  
     'http://localhost:5173',
     process.env.CLIENT_URL,
   ].filter(Boolean),
