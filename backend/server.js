@@ -17,7 +17,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://uni-notes-mu.vercel.app',
+  'https://notesswap-mu.vercel.app/',
     'http://localhost:5173',
     process.env.CLIENT_URL,
   ].filter(Boolean),
