@@ -18,14 +18,18 @@ export const metadata = {
 async function getSubjectsData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout — Render free tier sleeps
     const res = await fetch(`${baseUrl}/api/subjects`, {
       next: { revalidate: 3600 },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (!res.ok) return [];
     const data = await res.json();
     return data.data || [];
   } catch {
-    return [];
+    return []; // Falls back to hardcoded subjects in LandingClient
   }
 }
 
