@@ -15,14 +15,24 @@ const app = express();
 // middleware
 app.use(helmet());
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-  'https://notesswap-mu.vercel.app/',
-    'http://localhost:5173',
-    process.env.CLIENT_URL,
-  ].filter(Boolean),
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true)
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://notesswap-mu.vercel.app',
+      process.env.CLIENT_URL,
+    ].filter(Boolean)
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
