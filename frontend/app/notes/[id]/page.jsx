@@ -101,30 +101,46 @@ export default function NoteDetailPage({ params }) {
   }
 
   const handleDownload = async () => {
-    if (actionLoading) return
-    setActionLoading('download')
-    try {
-      const res = await downloadNote(id)
-      const fileUrl = res.data.fileUrl
-      const filename = note.originalName || `${note.title}.${note.fileType}`
+  if (actionLoading) return
+  setActionLoading('download')
+  try {
+    const res = await downloadNote(id)
+    const fileUrl  = res.data.fileUrl
+    const filename = res.data.originalName || `${note.title}.${note.fileType}`
 
+    // ✅ For mobile — open directly in new tab with proper URL
+    // Mobile browsers handle downloads better via direct navigation
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
+    if (isMobile) {
+      window.open(fileUrl, '_blank')
+      return
+    }
+
+    // ✅ For desktop — use fetch + blob for clean filename
+    try {
       const response = await fetch(fileUrl)
-      const blob = await response.blob()
-      const blobUrl = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
+      const blob     = await response.blob()
+      const blobUrl  = window.URL.createObjectURL(blob)
+      const link     = document.createElement('a')
+      link.href      = blobUrl
+      link.download  = filename
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(blobUrl)
-    } catch (err) {
-      console.error('Download error:', err)
-      if (note?.fileUrl) window.open(note.fileUrl, '_blank')
-    } finally {
-      setActionLoading('')
+    } catch {
+      // Fallback if fetch fails
+      window.open(fileUrl, '_blank')
     }
+
+  } catch (err) {
+    console.error('Download error:', err)
+    if (note?.fileUrl) window.open(note.fileUrl, '_blank')
+  } finally {
+    setActionLoading('')
   }
+}
 
   const handleAddComment = async (e) => {
     e.preventDefault()

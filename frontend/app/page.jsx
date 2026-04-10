@@ -15,21 +15,38 @@ export const metadata = {
   },
 };
 
+// async function getSubjectsData() {
+//   try {
+//     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000" || process.env.API_URL;
+//     const controller = new AbortController();
+//     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout — Render free tier sleeps
+//     const res = await fetch(`${baseUrl}/api/subjects`, {
+//       next: { revalidate: 3600 },
+//       signal: controller.signal,
+//     });
+//     clearTimeout(timeoutId);
+//     if (!res.ok) return [];
+//     const data = await res.json();
+//     return data.data || [];
+//   } catch {
+//     return []; // Falls back to hardcoded subjects in LandingClient
+//   }
+// }
+
+
 async function getSubjectsData() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout — Render free tier sleeps
+    // ✅ Use API_URL for server side — works both locally and in production
+    const baseUrl = process.env.API_URL || 'http://localhost:5000'
     const res = await fetch(`${baseUrl}/api/subjects`, {
-      next: { revalidate: 3600 },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data || [];
-  } catch {
-    return []; // Falls back to hardcoded subjects in LandingClient
+      cache: 'no-store'
+    })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.data || []
+  } catch (err) {
+    console.error('Failed to fetch subjects:', err)
+    return []
   }
 }
 

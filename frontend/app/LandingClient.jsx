@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import styles from './page.module.css'
 
+
 // ===== MODAL CONTENT =====
 const getModalContent = (styles) => ({
   about: {
@@ -428,7 +429,7 @@ export default function LandingClient({ subjects }) {
                     <div className={styles.subjectName}>{s.name}</div>
                     <div className={styles.subjectCount}>{s.notesCount || 0} notes</div>
                     <div className={styles.subjectBar}>
-                      <div className={styles.subjectBarFill} style={{ background: color, width: `${Math.min((s.notesCount / 30) * 100, 100)}%` }} />
+                    <div className={styles.subjectBarFill} style={{ background: color, width: `${Math.min((s.notesCount / 30) * 100, 100)}%` }} />
                     </div>
                   </div>
                 </Link>
