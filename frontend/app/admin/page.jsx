@@ -168,28 +168,26 @@ const handleDeleteNote = async (noteId) => {
 }
 const handleDownload = async (note) => {
   try {
-    const url      = note.fileUrl
+    // Show downloading state
+    const url = note.fileUrl
     const filename = note.originalName || `${note.title}.${note.fileType}`
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-
-    if (isMobile) {
-      window.open(url, '_blank')
-      return
-    }
-
+    // Fetch the file as blob
     const response = await fetch(url)
-    const blob     = await response.blob()
-    const blobUrl  = window.URL.createObjectURL(blob)
-    const link     = document.createElement('a')
-    link.href      = blobUrl
-    link.download  = filename
+    const blob = await response.blob()
+
+    // Create download link
+    const blobUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(blobUrl)
   } catch (err) {
     console.error('Download error:', err)
+    // Fallback — open in new tab
     window.open(note.fileUrl, '_blank')
   }
 }

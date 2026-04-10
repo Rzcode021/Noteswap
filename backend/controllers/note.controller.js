@@ -246,19 +246,15 @@ const downloadNote = async (req, res) => {
 
     await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
 
-    // ✅ Build proper filename with correct extension
+    // ✅ Build proper download URL with filename
     const originalName = note.originalName || `${note.title}.${note.fileType}`
-    const safeName = encodeURIComponent(
-      originalName.replace(/[^a-zA-Z0-9._-]/g, '_')
-    )
-
-    // ✅ Use fl_attachment with correct filename to force proper download
+    
+    // ✅ For Cloudinary — add fl_attachment to force download with proper filename
     let downloadUrl = note.fileUrl
     if (note.fileUrl.includes('cloudinary.com')) {
-      downloadUrl = note.fileUrl.replace(
-        '/upload/',
-        `/upload/fl_attachment:${safeName}/`
-      )
+      // Insert fl_attachment:filename into the URL
+      const safeName = encodeURIComponent(originalName.replace(/[^a-zA-Z0-9._-]/g, '_'))
+      downloadUrl = note.fileUrl.replace('/upload/', `/upload/fl_attachment:${safeName}/`)
     }
 
     return res.status(200).json({
@@ -272,6 +268,7 @@ const downloadNote = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
+
 // GET /api/notes/my
 // Get logged in user's uploaded notes — protected
 const getMyNotes = async (req, res) => {
