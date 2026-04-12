@@ -100,31 +100,90 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
-  const handleDownload = async () => {
-    if (actionLoading) return
-    setActionLoading('download')
-    try {
-      const res = await downloadNote(id)
-      const fileUrl = res.data.fileUrl
-      const filename = note.originalName || `${note.title}.${note.fileType}`
+  
+// const handleDownload = async () => {
+//   if (actionLoading) return;
+//   setActionLoading('download');
 
-      const response = await fetch(fileUrl)
-      const blob = await response.blob()
-      const blobUrl = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(blobUrl)
-    } catch (err) {
-      console.error('Download error:', err)
-      if (note?.fileUrl) window.open(note.fileUrl, '_blank')
-    } finally {
-      setActionLoading('')
+//   try {
+//     // 1. Tell backend to increment count and get the modified URL
+//     const res = await downloadNote(id);
+//     const downloadUrl = res.data.fileUrl; // This already has fl_attachment from the backend!
+//     const filename = res.data.originalName || `${note.title}.${note.fileType}`;
+
+//     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+//     if (isMobile) {
+//       window.open(downloadUrl, '_blank');
+//       return;
+//     }
+
+//     // 2. NATIVE BROWSER DOWNLOAD
+//     const link = document.createElement('a');
+//     link.href = downloadUrl;
+//     link.download = filename;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+
+//   } catch (err) {
+//     console.error('Student download error:', err);
+//     // Fallback to the raw URL if the backend fails
+//     if (note?.fileUrl) window.open(note.fileUrl, '_blank');
+//   } finally {
+//     setActionLoading('');
+//   }
+// }
+
+const handleDownload = async () => {
+  if (actionLoading) return;
+  setActionLoading('download');
+
+  try {
+    const res = await downloadNote(id);
+    const fileUrl  = res.data.fileUrl;
+    const filename = res.data.originalName || `${note.title}.${note.fileType}`;
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.open(fileUrl, '_blank');
+      return;
     }
+
+    // 1. Fetch the file
+    const response = await fetch(fileUrl);
+
+    // 🚨 THE CRITICAL FIX: Ensure we actually got the file, not a 404 error page
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`);
+    }
+
+    // 2. Convert to Blob (Bypasses Cross-Origin download restrictions)
+    const blob     = await response.blob();
+    const blobUrl  = window.URL.createObjectURL(blob);
+    
+    // 3. Trigger Download
+    const link     = document.createElement('a');
+    link.href      = blobUrl;
+    link.download  = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up memory
+    window.URL.revokeObjectURL(blobUrl);
+
+  } catch (err) {
+    console.error('Download error:', err);
+    // Ultimate Fallback: If fetch fails (CORS issue), just open the link directly
+    if (note?.fileUrl) {
+      window.open(note.fileUrl, '_blank');
+    }
+  } finally {
+    setActionLoading('');
   }
+}
 
   const handleAddComment = async (e) => {
     e.preventDefault()

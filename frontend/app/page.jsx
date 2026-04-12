@@ -36,17 +36,31 @@ export const metadata = {
 
 async function getSubjectsData() {
   try {
-    // ✅ Use API_URL for server side — works both locally and in production
-    const baseUrl = process.env.API_URL || 'http://localhost:5000'
-    const res = await fetch(`${baseUrl}/api/subjects`, {
-      cache: 'no-store'
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.data || []
+    // Safely check both common env var names and remove any accidental trailing slashes
+    let baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000';
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+
+    const targetUrl = `${baseUrl}/api/subjects`;
+    console.log('Fetching subjects from:', targetUrl); // Check your production logs for this!
+
+    const res = await fetch(targetUrl, {
+      // Use next: { revalidate } instead of cache: 'no-store' so it plays nicely 
+      // with your page-level export const revalidate = 3600
+      next: { revalidate: 3600 } 
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch: ${res.status} ${res.statusText}`);
+      return [];
+    }
+
+    const data = await res.json();
+    return data.data || [];
   } catch (err) {
-    console.error('Failed to fetch subjects:', err)
-    return []
+    console.error('Server fetch error:', err);
+    return []; // Falls back to hardcoded subjects in LandingClient
   }
 }
 

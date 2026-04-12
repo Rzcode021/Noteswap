@@ -234,6 +234,41 @@ const likeNote = async (req, res) => {
 
 // POST /api/notes/:id/download
 // Increment download count — protected
+// const downloadNote = async (req, res) => {
+//   try {
+//     const note = await Note.findById(req.params.id)
+//     if (!note) {
+//       return res.status(404).json({ message: 'Note not found' })
+//     }
+
+//     note.downloadsCount += 1
+//     await note.save()
+
+//     await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
+
+//     // ✅ Build proper download URL with filename
+//     const originalName = note.originalName || `${note.title}.${note.fileType}`
+    
+//     // ✅ For Cloudinary — add fl_attachment to force download with proper filename
+//     let downloadUrl = note.fileUrl
+//     if (note.fileUrl.includes('cloudinary.com')) {
+//       // Insert fl_attachment:filename into the URL
+//       const safeName = encodeURIComponent(originalName.replace(/[^a-zA-Z0-9._-]/g, '_'))
+//       downloadUrl = note.fileUrl.replace('/upload/', `/upload/fl_attachment:${safeName}/`)
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Download count updated',
+//       fileUrl: downloadUrl,
+//       originalName,
+//       downloadsCount: note.downloadsCount,
+//     })
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Server error', error: error.message })
+//   }
+// }
+
 const downloadNote = async (req, res) => {
   try {
     const note = await Note.findById(req.params.id)
@@ -246,21 +281,12 @@ const downloadNote = async (req, res) => {
 
     await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
 
-    // ✅ Build proper download URL with filename
     const originalName = note.originalName || `${note.title}.${note.fileType}`
-    
-    // ✅ For Cloudinary — add fl_attachment to force download with proper filename
-    let downloadUrl = note.fileUrl
-    if (note.fileUrl.includes('cloudinary.com')) {
-      // Insert fl_attachment:filename into the URL
-      const safeName = encodeURIComponent(originalName.replace(/[^a-zA-Z0-9._-]/g, '_'))
-      downloadUrl = note.fileUrl.replace('/upload/', `/upload/fl_attachment:${safeName}/`)
-    }
 
     return res.status(200).json({
       success: true,
       message: 'Download count updated',
-      fileUrl: downloadUrl,
+      fileUrl: note.fileUrl, // Just send the standard Cloudinary URL
       originalName,
       downloadsCount: note.downloadsCount,
     })

@@ -166,33 +166,89 @@ const handleDeleteNote = async (noteId) => {
   if (note.fileType === 'image') return note.fileUrl
   return `https://docs.google.com/viewer?url=${encodeURIComponent(note.fileUrl)}&embedded=true`
 }
-const handleDownload = async (note) => {
-  try {
-    // Show downloading state
-    const url = note.fileUrl
-    const filename = note.originalName || `${note.title}.${note.fileType}`
 
-    // Fetch the file as blob
-    const response = await fetch(url)
-    const blob = await response.blob()
+// const handleDownload = async (note) => {
+//   try {
+//     const url = note.fileUrl;
+//     const filename = note.originalName || `${note.title}.${note.fileType}`;
 
-    // Create download link
-    const blobUrl = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = blobUrl
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(blobUrl)
-  } catch (err) {
-    console.error('Download error:', err)
-    // Fallback — open in new tab
-    window.open(note.fileUrl, '_blank')
-  }
-}
+//     // Clean the filename to ensure it doesn't break the URL
+//     const safeName = encodeURIComponent(filename.replace(/[^a-zA-Z0-9._-]/g, '_'));
+
+//     // Inject fl_attachment to force the browser to download instead of open
+//     let downloadUrl = url;
+//     if (url.includes('cloudinary.com')) {
+//       downloadUrl = url.replace('/upload/', `/upload/fl_attachment:${safeName}/`);
+//     }
+
+//     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+//     if (isMobile) {
+//       window.open(downloadUrl, '_blank');
+//       return;
+//     }
+
+//     // NATIVE BROWSER DOWNLOAD (No fetch, no blobs, no CORS issues!)
+//     const link = document.createElement('a');
+//     link.href = downloadUrl;
+//     // The download attribute works perfectly when paired with fl_attachment
+//     link.download = filename; 
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+
+//   } catch (err) {
+//     console.error('Admin download error:', err);
+//     window.open(note.fileUrl, '_blank'); // Ultimate fallback
+//   }
+// }
 // ✅ New — get proper download URL
 
+const handleDownload = async (note) => {
+  try {
+    const fileUrl  = note.fileUrl;
+    const filename = note.originalName || `${note.title}.${note.fileType}`;
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // Mobile browsers handle raw file URLs best by opening them directly
+    if (isMobile) {
+      window.open(fileUrl, '_blank');
+      return;
+    }
+
+    // 1. Fetch the file directly from Cloudinary
+    const response = await fetch(fileUrl);
+
+    // 🚨 THE CRITICAL FIX: Check if Cloudinary threw an error (404/403)
+    // This stops it from turning an HTML error page into a corrupted PDF!
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.status}`);
+    }
+
+    // 2. Convert to Blob (Bypasses Cross-Origin download restrictions)
+    const blob     = await response.blob();
+    const blobUrl  = window.URL.createObjectURL(blob);
+    
+    // 3. Trigger NATIVE Browser Download
+    const link     = document.createElement('a');
+    link.href      = blobUrl;
+    link.download  = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up memory to keep the app fast
+    window.URL.revokeObjectURL(blobUrl);
+
+  } catch (err) {
+    console.error('Admin download error:', err);
+    // Ultimate Fallback: If fetch fails (e.g., a CORS block), open the link directly
+    if (note?.fileUrl) {
+      window.open(note.fileUrl, '_blank');
+    }
+  }
+}
 
   const getFileTypeBg = (type) => {
     if (type === 'pdf')   return { bg: 'var(--orange-light)', color: 'var(--orange-dark)' }
