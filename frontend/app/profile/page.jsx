@@ -511,7 +511,7 @@ export default function ProfilePage() {
                     return (
                       <Link key={note._id} href={note.status === 'approved' ? `/notes/${note._id}` : '#'} style={{ textDecoration: 'none' }}>
                         <div className="note-card" style={{ opacity: note.status === 'rejected' ? 0.7 : 1 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+                          {/* <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
                             <span style={{
                               fontSize: '0.68rem', fontWeight: 900, padding: '3px 10px',
                               borderRadius: '50px', background: bgs[i % bgs.length],
@@ -522,7 +522,28 @@ export default function ProfilePage() {
                               fontSize: '0.67rem', fontWeight: 800, padding: '3px 9px',
                               borderRadius: '20px', background: s.bg, color: s.color,
                             }}>{s.label}</span>
-                          </div>
+                          </div> */}
+                          {/* Add branch badge next to subject badge */}
+<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+  <span style={{
+    fontSize: '0.68rem', fontWeight: 900, padding: '3px 10px',
+    borderRadius: '50px', background: bgs[i % bgs.length],
+    color: colors[i % colors.length],
+    border: '1.5px solid rgba(255,255,255,0.9)',
+  }}>{note.subject?.name || 'General'}</span>
+  <div style={{ display: 'flex', gap: '4px' }}>
+    {note.branch && (
+      <span style={{
+        fontSize: '0.67rem', fontWeight: 800, padding: '3px 8px',
+        borderRadius: '20px', background: 'var(--teal-light)', color: 'var(--teal)',
+      }}>{note.branch}</span>
+    )}
+    <span style={{
+      fontSize: '0.67rem', fontWeight: 800, padding: '3px 9px',
+      borderRadius: '20px', background: s.bg, color: s.color,
+    }}>{s.label}</span>
+  </div>
+</div>
                           <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.86rem', fontWeight: 800, color: 'var(--dark)', marginBottom: '3px', lineHeight: 1.3 }}>
                             {note.title}
                           </div>

@@ -1,4 +1,4 @@
 import api from './api'
 
-export const getSubjects = () => api.get('/api/subjects')
+export const getSubjects = (params = {}) => api.get('/api/subjects', { params })
 export const getSubjectBySlug = (slug) => api.get(`/api/subjects/${slug}`)

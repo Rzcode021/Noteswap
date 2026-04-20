@@ -922,8 +922,9 @@ const handleDownload = async (note) => {
   )
 }
 
+
 // ===== PENDING NOTE ROW COMPONENT =====
-function PendingNoteRow({ note, actionLoading, onApprove, onReject, onPreview,onDelete, getFileTypeBg, showStatus }) {
+function PendingNoteRow({ note, actionLoading, onApprove, onReject, onPreview, onDelete, getFileTypeBg, showStatus }) {
   const ft = getFileTypeBg(note.fileType)
 
   return (
@@ -948,8 +949,16 @@ function PendingNoteRow({ note, actionLoading, onApprove, onReject, onPreview,on
         <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--dark)', marginBottom: '4px' }}>
           {note.title}
         </div>
+        
+        {/* ✅ UPDATED CHIPS ROW WITH BRANCH */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '6px' }}>
-          {[note.subject?.name, note.unit, note.semester, note.college].filter(Boolean).map((chip, i) => (
+          {[
+            note.subject?.name,
+            note.branch,        // ✅ Added branch here
+            note.unit, 
+            note.semester, 
+            note.college
+          ].filter(Boolean).map((chip, i) => (
             <span key={i} style={{
               fontSize: '0.68rem', fontWeight: 700, padding: '2px 8px',
               borderRadius: '6px', background: 'var(--bg)', color: 'var(--mid)',
@@ -963,6 +972,7 @@ function PendingNoteRow({ note, actionLoading, onApprove, onReject, onPreview,on
             }}>{note.status}</span>
           )}
         </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'var(--orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: 800, color: 'white', minWidth: '20px' }}>
             {note.uploadedBy?.name?.charAt(0) || 'U'}
@@ -1013,20 +1023,20 @@ function PendingNoteRow({ note, actionLoading, onApprove, onReject, onPreview,on
           </>
         )}
         {/* ✅ Delete — only for approved notes */}
-  {note.status === 'approved' && (
-    <button
-      onClick={() => onDelete(note._id)}
-      disabled={actionLoading === note._id}
-      style={{
-        padding: '6px 14px', borderRadius: '50px', border: 'none',
-        background: '#FEF2F2', color: '#991B1B',
-        fontFamily: 'Nunito, sans-serif', fontSize: '0.76rem', fontWeight: 800,
-        cursor: 'pointer', boxShadow: '0 2px 0 #FECACA', width: '100%',
-      }}
-    >
-      {actionLoading === note._id ? '...' : '🗑 Delete'}
-    </button>
-  )}
+        {note.status === 'approved' && (
+          <button
+            onClick={() => onDelete(note._id)}
+            disabled={actionLoading === note._id}
+            style={{
+              padding: '6px 14px', borderRadius: '50px', border: 'none',
+              background: '#FEF2F2', color: '#991B1B',
+              fontFamily: 'Nunito, sans-serif', fontSize: '0.76rem', fontWeight: 800,
+              cursor: 'pointer', boxShadow: '0 2px 0 #FECACA', width: '100%',
+            }}
+          >
+            {actionLoading === note._id ? '...' : '🗑 Delete'}
+          </button>
+        )}
       </div>
     </div>
   )

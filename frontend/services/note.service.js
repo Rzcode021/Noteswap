@@ -6,6 +6,7 @@ export const getMyNotes = () => api.get('/api/notes/user/my')
 export const likeNote = (id) => api.post(`/api/notes/${id}/like`)
 export const downloadNote = (id) => api.post(`/api/notes/${id}/download`)
 export const deleteNote = (id) => api.delete(`/api/notes/${id}`)
+export const getBranches = () => api.get('/api/notes/branches')
 
 export const uploadNote = (formData) =>
   api.post('/api/notes/upload', formData, {

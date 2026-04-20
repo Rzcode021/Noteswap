@@ -49,6 +49,7 @@ originalName: {
     },
 
     // Classification
+    
     subject: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subject',
@@ -74,6 +75,22 @@ originalName: {
       required: true,
       trim: true,
     },
+    // Classification
+branch: {
+  type: String,
+  enum: [
+    'CSE',    // Computer Science Engineering
+    'IT',     // Information Technology
+    'ECE',    // Electronics & Communication
+    'EE',     // Electrical Engineering
+    'ME',     // Mechanical Engineering
+    'CE',     // Civil Engineering
+    'MCA',    // Master of Computer Applications
+    'MBA',    // Master of Business Administration
+    'Other',  // Other branches
+  ],
+  default: 'Other',
+},
 
     // Uploader
     uploadedBy: {
@@ -124,5 +141,7 @@ originalName: {
 noteSchema.index({ subject: 1, status: 1 });
 noteSchema.index({ status: 1, createdAt: -1 });
 noteSchema.index({ uploadedBy: 1 });
+// Add to existing indexes
+noteSchema.index({ branch: 1, status: 1 })
 
 module.exports = mongoose.model('Note', noteSchema);

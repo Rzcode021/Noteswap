@@ -3,7 +3,7 @@ const User    = require('../models/User');
 const Subject = require('../models/Subject');
 const { cloudinary } = require('../config/cloudinary');
 const admin   = require('../config/firebase');
-
+const { createNotification } = require('./notification.controller')
 // GET /api/admin/pending
 const getPendingNotes = async (req, res) => {
   try {
@@ -35,33 +35,63 @@ const getPendingNotes = async (req, res) => {
 // PUT /api/admin/:id/approve
 const approveNote = async (req, res) => {
   try {
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findById(req.params.id)
+      .populate('subject', 'name slug color icon')
+      .populate('uploadedBy', 'name profilePicture college')
 
     if (!note) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: 'Note not found' })
     }
 
-    if (note.status === 'approved') {
-      return res.status(400).json({ message: 'Note is already approved' });
+    note.status     = 'approved'
+    note.approvedAt = new Date()
+    await note.save()
+
+    // ✅ Notify uploader
+    await createNotification({
+      recipient: note.uploadedBy._id,
+      sender:    null,
+      type:      'note_approved',
+      note:      note._id,
+      message:   `✅ Your note "${note.title}" has been approved and is now live!`,
+    }, req)
+
+    // ✅ Broadcast to ALL users that a new note is available
+    const io = req.app.get('io')
+    if (io) {
+      io.emit('new_note_available', {
+        _id:            note._id,
+        title:          note.title,
+        description:    note.description,
+        subject:        note.subject,
+        unit:           note.unit,
+        semester:       note.semester,
+        year:           note.year,
+        college:        note.college,
+        branch:         note.branch,
+        fileType:       note.fileType,
+        fileSize:       note.fileSize,
+        uploadedBy:     note.uploadedBy,
+        likesCount:     0,
+        downloadsCount: 0,
+        viewsCount:     0,
+        tags:           note.tags,
+        createdAt:      note.approvedAt,
+        status:         'approved',
+      })
+      console.log('📡 New note broadcast to all users:', note.title)
     }
-
-    note.status          = 'approved';
-    note.approvedAt      = new Date();
-    note.rejectionReason = null;
-    await note.save();
-
-    // increment subject notes count
-    await Subject.findByIdAndUpdate(note.subject, { $inc: { notesCount: 1 } });
 
     return res.status(200).json({
       success: true,
       message: 'Note approved successfully',
       data: note,
-    });
+    })
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Approve note error:', error.message)
+    return res.status(500).json({ message: 'Server error', error: error.message })
   }
-};
+}
 
 // PUT /api/admin/:id/reject
 const rejectNote = async (req, res) => {
@@ -102,7 +132,14 @@ const rejectNote = async (req, res) => {
         console.log('🗑️ Unused subject deleted:', note.subject.name)
       }
     }
-
+await createNotification({
+  recipient:       note.uploadedBy,
+  sender:          null,
+  type:            'note_rejected',
+  note:            note._id,
+  message:         `❌ Your note "${note.title}" was rejected.`,
+  rejectionReason: req.body.reason || 'Does not meet quality standards',
+}, req)
     return res.status(200).json({
       success: true,
       message: 'Note rejected successfully',
@@ -117,33 +154,33 @@ const rejectNote = async (req, res) => {
 // GET /api/admin/notes
 const getAllNotes = async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * limit;
+    const { status, branch, page = 1, limit = 20 } = req.query
 
-    const filter = {};
-    if (status) filter.status = status;
+    const filter = {}
+    if (status) filter.status = status
+    if (branch) filter.branch = branch   // ✅ add this
+
+    const skip = (page - 1) * limit
 
     const notes = await Note.find(filter)
-      .populate('subject', 'name slug color')
+      .populate('subject', 'name')
       .populate('uploadedBy', 'name email college')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(Number(limit));
+      .limit(Number(limit))
 
-    const total = await Note.countDocuments(filter);
+    const total = await Note.countDocuments(filter)
 
     return res.status(200).json({
       success: true,
       count: notes.length,
       total,
-      totalPages: Math.ceil(total / limit),
-      currentPage: Number(page),
       data: notes,
-    });
+    })
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    return res.status(500).json({ message: 'Server error', error: error.message })
   }
-};
+}
 
 // GET /api/admin/users
 const getAllUsers = async (req, res) => {

@@ -31,6 +31,7 @@ export default function UploadPage() {
     year: '',
     college: '',
     tags: '',
+    branch: '',
   })
 
   const [units, setUnits] = useState([])
@@ -115,6 +116,7 @@ export default function UploadPage() {
       return
     }
     if (!form.semester) { setError('Please select a semester.'); return }
+    if (!form.branch) { setError('Please select your branch.'); return }
     if (!form.college.trim()) { setError('Please enter your college name.'); return }
 
     setError('')
@@ -129,7 +131,7 @@ export default function UploadPage() {
       formData.append('subject', customSubject ? (form.subjectCustom || '').trim() : form.subject)
       formData.append('unit', form.unit || 'General')
       formData.append('semester', form.semester)
-
+      formData.append('branch', form.branch)
       formData.append('year', form.year || 'Not specified')
       formData.append('college', form.college)
       formData.append('tags', form.tags)
@@ -183,6 +185,7 @@ export default function UploadPage() {
     { label: 'File uploaded', done: !!selectedFile },
     { label: 'Title added', done: form.title.trim().length > 0 },
     { label: 'Subject selected', done: !!form.subject || !!form.subjectCustom?.trim() },
+     { label: 'Branch selected',   done: !!form.branch  },
     { label: 'Semester selected', done: !!form.semester },
     { label: 'College entered', done: form.college.trim().length > 0 },
   ]
@@ -662,6 +665,35 @@ export default function UploadPage() {
                   </select>
                 </div>
               </div>
+
+              {/* Branch selector — add after year/semester grid */}
+<div style={{ marginBottom: '1rem' }}>
+  <label className="field-label">
+    Branch <span style={{ color: 'var(--orange)' }}>*</span>
+  </label>
+  <select
+    name="branch"
+    className="input-clay"
+    value={form.branch}
+    onChange={handleChange}
+    style={{ cursor: 'pointer' }}
+  >
+    <option value="">Select branch...</option>
+    {[
+      { value: 'CSE', label: 'CSE — Computer Science Engineering'    },
+      { value: 'IT',  label: 'IT  — Information Technology'          },
+      { value: 'ECE', label: 'ECE — Electronics & Communication'     },
+      { value: 'EE',  label: 'EE  — Electrical Engineering'          },
+      { value: 'ME',  label: 'ME  — Mechanical Engineering'          },
+      { value: 'CE',  label: 'CE  — Civil Engineering'               },
+      { value: 'MCA', label: 'MCA — Master of Computer Applications' },
+      { value: 'MBA', label: 'MBA — Master of Business Administration'},
+      { value: 'Other', label: 'Other'                               },
+    ].map(b => (
+      <option key={b.value} value={b.value}>{b.label}</option>
+    ))}
+  </select>
+</div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label className="field-label">College / University <span style={{ color: 'var(--orange)' }}>*</span></label>

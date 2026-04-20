@@ -136,54 +136,61 @@ export default function NoteDetailPage({ params }) {
 // }
 
 const handleDownload = async () => {
-  if (actionLoading) return;
-  setActionLoading('download');
+    if (actionLoading) return;
+    setActionLoading('download');
 
-  try {
-    const res = await downloadNote(id);
-    const fileUrl  = res.data.fileUrl;
-    const filename = res.data.originalName || `${note.title}.${note.fileType}`;
+    try {
+      const res = await downloadNote(id);
+      
+      // 1. Get the URL and filename
+      let rawUrl = res.data.fileUrl || note.fileUrl;
+      const filename = res.data.originalName || `${note.title}.${note.fileType}`;
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // 🚨 THE SURGICAL FIX 🚨
+      // This strips out the illegal "fl_attachment:filename.pdf/" part from the URL
+      // turning it into a completely valid Cloudinary RAW link.
+      const cleanUrl = rawUrl.replace(/fl_attachment:[^/]+\//, '');
 
-    if (isMobile) {
-      window.open(fileUrl, '_blank');
-      return;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        window.open(cleanUrl, '_blank');
+        return;
+      }
+
+      // 2. Fetch the CLEAN, scrubbed URL
+      const response = await fetch(cleanUrl);
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.status}`);
+      }
+
+      // 3. The Blob method automatically names the file using link.download
+      const blob     = await response.blob();
+      const blobUrl  = window.URL.createObjectURL(blob);
+      
+      const link     = document.createElement('a');
+      link.href      = blobUrl;
+      link.download  = filename; // 👉 Naming happens here safely!
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+    } catch (err) {
+      console.error('Download error:', err);
+      // Fallback: If it still fails, open the scrubbed URL, not the poisoned one
+      if (note?.fileUrl) {
+        const fallbackUrl = note.fileUrl.replace(/fl_attachment:[^/]+\//, '');
+        window.open(fallbackUrl, '_blank');
+      }
+    } finally {
+      setActionLoading('');
     }
-
-    // 1. Fetch the file
-    const response = await fetch(fileUrl);
-
-    // 🚨 THE CRITICAL FIX: Ensure we actually got the file, not a 404 error page
-    if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.status}`);
-    }
-
-    // 2. Convert to Blob (Bypasses Cross-Origin download restrictions)
-    const blob     = await response.blob();
-    const blobUrl  = window.URL.createObjectURL(blob);
-    
-    // 3. Trigger Download
-    const link     = document.createElement('a');
-    link.href      = blobUrl;
-    link.download  = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Clean up memory
-    window.URL.revokeObjectURL(blobUrl);
-
-  } catch (err) {
-    console.error('Download error:', err);
-    // Ultimate Fallback: If fetch fails (CORS issue), just open the link directly
-    if (note?.fileUrl) {
-      window.open(note.fileUrl, '_blank');
-    }
-  } finally {
-    setActionLoading('');
   }
-}
+
+
 
   const handleAddComment = async (e) => {
     e.preventDefault()
@@ -442,6 +449,7 @@ const handleDownload = async () => {
           <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap', marginBottom: '1rem' }}>
             {[
               { label: note.subject?.name, bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
+              { label: note.branch,        bg: 'var(--teal-light)',   color: 'var(--teal)'       },
               { label: note.unit, bg: 'var(--bg)', color: 'var(--mid)' },
               { label: note.semester, bg: 'var(--bg)', color: 'var(--mid)' },
               { label: '✅ Verified', bg: 'var(--green-light)', color: 'var(--green)' },
@@ -764,6 +772,7 @@ const handleDownload = async () => {
               { label: 'Semester', val: note.semester },
               { label: 'Year', val: note.year },
               { label: 'College', val: note.college },
+                { label: 'Branch',   val: note.branch },
               { label: 'Type', val: note.fileType?.toUpperCase() },
               { label: 'Size', val: formatFileSize(note.fileSize) },
             ].filter(r => r.val).map((r, i) => (

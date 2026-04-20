@@ -10,20 +10,26 @@ const generateSlug = (name) => {
 // Get all active subjects — public
 const getSubjects = async (req, res) => {
   try {
+    const { branch } = req.query
     const Note = require('../models/Note')
+
     const subjects = await Subject.find({}).sort({ name: 1 })
 
     const subjectsWithCount = await Promise.all(
       subjects.map(async (subject) => {
-        const count = await Note.countDocuments({
-          subject: subject._id,
-          status: 'approved',
-        })
+        const noteFilter = {
+          subject:  subject._id,
+          status:   'approved',
+        }
+        // ✅ If branch selected, only count notes from that branch
+        if (branch) noteFilter.branch = branch
+
+        const count = await Note.countDocuments(noteFilter)
         return { ...subject.toObject(), notesCount: count }
       })
     )
 
-    // ✅ Only return subjects with at least 1 approved note
+    // Only return subjects that have notes in selected branch
     const filtered = subjectsWithCount.filter(s => s.notesCount > 0)
 
     return res.status(200).json({
@@ -52,6 +58,57 @@ const getSubjectBySlug = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+// Fetch subjects for a specific branch
+const fetchSubjectsForBranch = async (branch) => {
+  try {
+    const params = branch ? { branch } : {}
+    const res = await getSubjects(params)
+    setFilteredSubjects(res.data.data || [])
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Handle branch selection
+const handleBranchSelect = async (branch) => {
+  setSelectedBranch(branch)
+  setSelectedSubject(null)  // reset subject when branch changes
+  setNotesLoading(true)
+
+  try {
+    // Fetch subjects for this branch in parallel with notes
+    const [notesRes, subjectsRes] = await Promise.all([
+      getNotes(branch ? { branch, limit: 9, sortBy: 'trending' } : { limit: 9, sortBy: 'trending' }),
+      getSubjects(branch ? { branch } : {}),
+    ])
+    setNotes(notesRes.data.data || [])
+    setFilteredSubjects(subjectsRes.data.data || [])
+  } catch (err) {
+    console.error(err)
+  } finally {
+    setNotesLoading(false)
+  }
+}
+
+// Handle subject selection
+const handleSubjectSelect = async (subject) => {
+  setSelectedSubject(subject)
+  setNotesLoading(true)
+  try {
+    const params = {
+      subject: subject._id,
+      limit: 9,
+    }
+    if (selectedBranch) params.branch = selectedBranch
+    const res = await getNotes(params)
+    setNotes(res.data.data || [])
+  } catch (err) {
+    console.error(err)
+  } finally {
+    setNotesLoading(false)
+  }
+}
 
 // POST /api/subjects
 // Create a new subject — admin only
@@ -182,6 +239,9 @@ const addUnit = async (req, res) => {
 module.exports = {
   getSubjects,
   getSubjectBySlug,
+  fetchSubjectsForBranch,
+  handleBranchSelect,
+  handleSubjectSelect,
   createSubject,
   updateSubject,
   deleteSubject,

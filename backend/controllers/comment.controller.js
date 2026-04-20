@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Note    = require('../models/Note');
+const { createNotification } = require('./notification.controller')
 
 // GET /api/comments/:noteId
 // Get all comments for a note — protected
@@ -35,6 +36,7 @@ const getComments = async (req, res) => {
 
 // POST /api/comments/:noteId
 // Add a comment to a note — protected
+// 2. Here is your updated addComment function:
 const addComment = async (req, res) => {
   try {
     const { text } = req.body;
@@ -60,6 +62,15 @@ const addComment = async (req, res) => {
 
     // populate user info before sending back
     await comment.populate('user', 'name profilePicture college');
+
+    // 🔔 TRIGGER NOTIFICATION
+   await createNotification({
+  recipient: note.uploadedBy,
+  sender:    req.user._id,
+  type:      'note_commented',
+  note:      note._id,
+  message:   `💬 ${req.user.name} commented on your note "${note.title}"`,
+}, req)
 
     return res.status(201).json({
       success: true,

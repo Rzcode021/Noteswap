@@ -2,23 +2,24 @@ const { cloudinary } = require('../config/cloudinary');
 const Note = require('../models/Note');
 const Subject = require('../models/Subject');
 const User = require('../models/User');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { createNotification } = require('./notification.controller');
 
 // GET /api/notes
 // Get all approved notes — with filters
 const getNotes = async (req, res) => {
   try {
-    const { subject, unit, semester, year, college, search, page = 1, limit = 12 } = req.query;
+    const { subject, unit, semester, year, college, branch, search, page = 1, limit = 12 } = req.query
 
-    // build filter object
-    const filter = { status: 'approved' };
+const filter = { status: 'approved' }
 
-    if (subject)   filter.subject  = subject;
-    if (unit)      filter.unit     = unit;
-    if (semester)  filter.semester = semester;
-    if (year)      filter.year     = year;
-    if (college)   filter.college  = new RegExp(college, 'i');
-    if (search)    filter.title    = new RegExp(search, 'i');
+if (subject)  filter.subject  = subject
+if (unit)     filter.unit     = unit
+if (semester) filter.semester = semester
+if (year)     filter.year     = year
+if (college)  filter.college  = new RegExp(college, 'i')
+if (branch)   filter.branch   = branch   // ✅ add branch filter
+if (search)   filter.title    = new RegExp(search, 'i')
 
     const skip = (page - 1) * limit;
 
@@ -82,10 +83,10 @@ const uploadNote = async (req, res) => {
   console.log('📦 Full file object:', req.file)
 
   try {
-    const { title, description, subject, unit, semester, year, college, tags } = req.body
+  const { title, description, subject, unit, semester, year, college, branch, tags } = req.body
 
     // validate required fields — unit is optional
-  if (!title || !subject || !semester || !college) {
+ if (!title || !subject || !semester || !college || !branch) {
   return res.status(400).json({ message: 'Please fill all required fields' })
 }
 
@@ -153,6 +154,7 @@ const uploadNote = async (req, res) => {
       subject:      subjectDoc._id,
       unit:         unit?.trim() || 'General',
       semester,
+      branch:       branch || 'Other',
       year:         year?.trim() || 'Not specified',
       college:      college.trim(),
       uploadedBy:   req.user._id,
@@ -201,36 +203,41 @@ const uploadNote = async (req, res) => {
 // Like or unlike a note — protected
 const likeNote = async (req, res) => {
   try {
-    const note = await Note.findById(req.params.id);
-    if (!note) {
-      return res.status(404).json({ message: 'Note not found' });
-    }
+    const note = await Note.findById(req.params.id)
+    if (!note) return res.status(404).json({ message: 'Note not found' })
 
-    const userId = req.user._id;
-    const alreadyLiked = note.likes.includes(userId);
+    const userId      = req.user._id
+    const alreadyLiked = note.likes.includes(userId)
 
     if (alreadyLiked) {
-      // unlike — remove userId from likes array
-      note.likes     = note.likes.filter(id => id.toString() !== userId.toString());
-      note.likesCount = Math.max(0, note.likesCount - 1);
+      note.likes      = note.likes.filter(id => id.toString() !== userId.toString())
+      note.likesCount = Math.max(0, note.likesCount - 1)
     } else {
-      // like — add userId to likes array
-      note.likes.push(userId);
-      note.likesCount += 1;
+      note.likes.push(userId)
+      note.likesCount += 1
+
+      // ✅ Send notification to note owner
+     await createNotification({
+  recipient: note.uploadedBy,
+  sender:    userId,
+  type:      'note_liked',
+  note:      note._id,
+  message:   `❤️ ${req.user.name} liked your note "${note.title}"`,
+}, req) 
     }
 
-    await note.save();
+    await note.save()
 
     return res.status(200).json({
       success: true,
       message: alreadyLiked ? 'Note unliked' : 'Note liked',
-      liked: !alreadyLiked,
+      liked:   !alreadyLiked,
       likesCount: note.likesCount,
-    });
+    })
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    return res.status(500).json({ message: 'Server error', error: error.message })
   }
-};
+}
 
 // POST /api/notes/:id/download
 // Increment download count — protected
@@ -269,24 +276,64 @@ const likeNote = async (req, res) => {
 //   }
 // }
 
+// const downloadNote = async (req, res) => {
+//   try {
+//     const note = await Note.findById(req.params.id)
+//     if (!note) {
+//       return res.status(404).json({ message: 'Note not found' })
+//     }
+
+//     note.downloadsCount += 1
+//     await note.save()
+
+//     await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
+
+//     const originalName = note.originalName || `${note.title}.${note.fileType}`
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Download count updated',
+//       fileUrl: note.fileUrl, // Just send the standard Cloudinary URL
+//       originalName,
+//       downloadsCount: note.downloadsCount,
+//     })
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Server error', error: error.message })
+//   }
+// }
+
+
 const downloadNote = async (req, res) => {
   try {
     const note = await Note.findById(req.params.id)
-    if (!note) {
-      return res.status(404).json({ message: 'Note not found' })
-    }
+    if (!note) return res.status(404).json({ message: 'Note not found' })
 
     note.downloadsCount += 1
     await note.save()
 
     await User.findByIdAndUpdate(note.uploadedBy, { $inc: { totalDownloads: 1 } })
 
+    // ✅ Send notification to note owner
+    await createNotification({
+  recipient: note.uploadedBy,
+  sender:    req.user._id,
+  type:      'note_downloaded',
+  note:      note._id,
+  message:   `⬇️ ${req.user.name} downloaded your note "${note.title}"`,
+}, req)
+
     const originalName = note.originalName || `${note.title}.${note.fileType}`
+    const safeName     = encodeURIComponent(originalName.replace(/[^a-zA-Z0-9._-]/g, '_'))
+    let downloadUrl    = note.fileUrl
+
+    if (note.fileUrl.includes('cloudinary.com')) {
+      downloadUrl = note.fileUrl.replace('/upload/', `/upload/fl_attachment:${safeName}/`)
+    }
 
     return res.status(200).json({
       success: true,
       message: 'Download count updated',
-      fileUrl: note.fileUrl, // Just send the standard Cloudinary URL
+      fileUrl: downloadUrl,
       originalName,
       downloadsCount: note.downloadsCount,
     })
@@ -294,7 +341,6 @@ const downloadNote = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
-
 // GET /api/notes/my
 // Get logged in user's uploaded notes — protected
 const getMyNotes = async (req, res) => {
@@ -356,6 +402,36 @@ const deleteNote = async (req, res) => {
   }
 };
 
+
+// GET /api/notes/branches
+// Get all available branches with note counts
+const getBranches = async (req, res) => {
+  try {
+    const branches = [
+      'CSE', 'IT', 'ECE', 'EE', 'ME', 'CE', 'MCA', 'MBA', 'Other'
+    ]
+
+    const branchesWithCount = await Promise.all(
+      branches.map(async (branch) => {
+        const count = await Note.countDocuments({
+          branch,
+          status: 'approved',
+        })
+        return { name: branch, notesCount: count }
+      })
+    )
+
+    // Only return branches that have notes
+    const filtered = branchesWithCount.filter(b => b.notesCount > 0)
+
+    return res.status(200).json({
+      success: true,
+      data: filtered,
+    })
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
 module.exports = {
   getNotes,
   getNoteById,
@@ -364,4 +440,5 @@ module.exports = {
   downloadNote,
   getMyNotes,
   deleteNote,
+  getBranches,
 };

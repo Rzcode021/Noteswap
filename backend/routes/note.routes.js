@@ -8,6 +8,7 @@ const {
   downloadNote,
   getMyNotes,
   deleteNote,
+  getBranches,
 } = require('../controllers/note.controller');
 const verifyFirebaseToken = require('../middleware/verifyFirebaseToken');
 const { handleUpload }    = require('../middleware/upload.middleware');
@@ -20,6 +21,8 @@ router.get('/user/my',          verifyFirebaseToken, getMyNotes);
 router.post('/upload',          verifyFirebaseToken, handleUpload, uploadNote);
 
 // dynamic routes come LAST
+// Add this before the /:id routes
+router.get('/branches', getBranches)
 router.get('/:id',              getNoteById);
 router.post('/:id/like',        verifyFirebaseToken, likeNote);
 router.post('/:id/download',    verifyFirebaseToken, downloadNote);

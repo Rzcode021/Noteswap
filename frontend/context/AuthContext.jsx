@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthChange } from '../firebase/auth.firebase'
 import { syncUser } from '../services/auth.service'
+import { connectSocket, disconnectSocket } from '../lib/socket'
 
 const AuthContext = createContext(null)
 
@@ -17,30 +18,28 @@ export function AuthProvider({ children }) {
 
       if (fbUser) {
         try {
-          // ✅ Check for pending profile data from signup form
           const pendingData = localStorage.getItem('pendingProfileData')
           const extraData   = pendingData ? JSON.parse(pendingData) : {}
-
-          const res = await syncUser(extraData)
+          const res         = await syncUser(extraData)
           setUser(res.data.data)
 
-          // ✅ Clear pending data after successful sync
-          if (pendingData) localStorage.removeItem('pendingProfileData')
+          // ✅ Connect socket with MongoDB user ID
+          connectSocket(res.data.data._id)
 
+          if (pendingData) localStorage.removeItem('pendingProfileData')
         } catch (err) {
-          console.error('🔥 syncUser failed:', err.message)
-          // Fallback to Firebase user
+          console.error('syncUser failed:', err.message)
           setUser({
             _id:   fbUser.uid,
             name:  fbUser.displayName || fbUser.email?.split('@')[0] || 'Student',
             email: fbUser.email,
             photo: fbUser.photoURL,
           })
-          // Still clear pending data
-          localStorage.removeItem('pendingProfileData')
         }
       } else {
         setUser(null)
+        // ✅ Disconnect socket on logout
+        disconnectSocket()
       }
 
       setLoading(false)
