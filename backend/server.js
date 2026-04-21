@@ -66,7 +66,7 @@ app.use(cors({
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5173',
-      'https://notesswap-mu.vercel.app',
+      "https://note-swap.smarttechbros.com/",
       process.env.CLIENT_URL,
     ].filter(Boolean)
     if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
