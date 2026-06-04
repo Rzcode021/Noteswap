@@ -25,10 +25,10 @@ const noteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    filePublicId: {       
-     type: String,
-     required: true,
-     },
+    filePublicId: {
+      type: String,
+      required: true,
+    },
     fileType: {
       type: String,
       enum: ['pdf', 'image', 'docx', 'pptx'],
@@ -39,58 +39,73 @@ const noteSchema = new mongoose.Schema(
       default: 0,
     },
     // Add after fileSize field
-originalName: {
-  type: String,
-  default: null,
-},
+    originalName: {
+      type: String,
+      default: null,
+    },
     pageCount: {
       type: Number,
       default: null,
     },
 
     // Classification
-    
+
     subject: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subject',
       required: true,
     },
-   unit: {
-  type: String,
-  required: true,
-  trim: true,
-  default: 'General',
-},
+    unit: {
+      type: String,
+      required: true,
+      trim: true,
+      default: 'General',
+    },
     semester: {
       type: String,
       required: true,
     },
     year: {
-  type: String,
-  required: true,
-  default: 'Not specified',
-},
+      type: String,
+      required: true,
+      default: 'Not specified',
+    },
+    
+    university: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'University',
+      default: null,
+    },
+    course: {
+      type: String,
+      default: null,
+    },
+    category: {
+      type: String,
+      enum: ['notes', 'pyq', 'important-questions', 'lab', 'reference'],
+      default: 'notes',
+    },
+    // Classification
+    branch: {
+      type: String,
+      enum: [
+        'CSE',    // Computer Science Engineering
+        'IT',     // Information Technology
+        'ECE',    // Electronics & Communication
+        'EE',     // Electrical Engineering
+        'ME',     // Mechanical Engineering
+        'CE',     // Civil Engineering
+        'MCA',    // Master of Computer Applications
+        'MBA',    // Master of Business Administration
+        'Other',  // Other branches
+      ],
+      default: 'Other',
+    },
     college: {
       type: String,
       required: true,
       trim: true,
     },
-    // Classification
-branch: {
-  type: String,
-  enum: [
-    'CSE',    // Computer Science Engineering
-    'IT',     // Information Technology
-    'ECE',    // Electronics & Communication
-    'EE',     // Electrical Engineering
-    'ME',     // Mechanical Engineering
-    'CE',     // Civil Engineering
-    'MCA',    // Master of Computer Applications
-    'MBA',    // Master of Business Administration
-    'Other',  // Other branches
-  ],
-  default: 'Other',
-},
 
     // Uploader
     uploadedBy: {
@@ -143,5 +158,7 @@ noteSchema.index({ status: 1, createdAt: -1 });
 noteSchema.index({ uploadedBy: 1 });
 // Add to existing indexes
 noteSchema.index({ branch: 1, status: 1 })
+noteSchema.index({ university: 1, status: 1 })
+noteSchema.index({ category: 1, status: 1 })
 
 module.exports = mongoose.model('Note', noteSchema);

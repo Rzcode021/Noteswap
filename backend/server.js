@@ -92,6 +92,7 @@ app.use('/api/admin',    require('./routes/admin.routes'));
 app.use('/api/subjects', require('./routes/subject.routes'));
 app.use('/api/comments', require('./routes/comment.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
+app.use('/api/universities', require('./routes/university.routes'));
 
 // health check
 app.get('/', (req, res) => res.json({ message: 'NoteSwap API is running' }));

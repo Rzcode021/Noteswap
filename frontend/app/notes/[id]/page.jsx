@@ -100,48 +100,48 @@ export default function NoteDetailPage({ params }) {
     }
   }
 
-  
-// const handleDownload = async () => {
-//   if (actionLoading) return;
-//   setActionLoading('download');
 
-//   try {
-//     // 1. Tell backend to increment count and get the modified URL
-//     const res = await downloadNote(id);
-//     const downloadUrl = res.data.fileUrl; // This already has fl_attachment from the backend!
-//     const filename = res.data.originalName || `${note.title}.${note.fileType}`;
+  // const handleDownload = async () => {
+  //   if (actionLoading) return;
+  //   setActionLoading('download');
 
-//     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  //   try {
+  //     // 1. Tell backend to increment count and get the modified URL
+  //     const res = await downloadNote(id);
+  //     const downloadUrl = res.data.fileUrl; // This already has fl_attachment from the backend!
+  //     const filename = res.data.originalName || `${note.title}.${note.fileType}`;
 
-//     if (isMobile) {
-//       window.open(downloadUrl, '_blank');
-//       return;
-//     }
+  //     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-//     // 2. NATIVE BROWSER DOWNLOAD
-//     const link = document.createElement('a');
-//     link.href = downloadUrl;
-//     link.download = filename;
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
+  //     if (isMobile) {
+  //       window.open(downloadUrl, '_blank');
+  //       return;
+  //     }
 
-//   } catch (err) {
-//     console.error('Student download error:', err);
-//     // Fallback to the raw URL if the backend fails
-//     if (note?.fileUrl) window.open(note.fileUrl, '_blank');
-//   } finally {
-//     setActionLoading('');
-//   }
-// }
+  //     // 2. NATIVE BROWSER DOWNLOAD
+  //     const link = document.createElement('a');
+  //     link.href = downloadUrl;
+  //     link.download = filename;
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
 
-const handleDownload = async () => {
+  //   } catch (err) {
+  //     console.error('Student download error:', err);
+  //     // Fallback to the raw URL if the backend fails
+  //     if (note?.fileUrl) window.open(note.fileUrl, '_blank');
+  //   } finally {
+  //     setActionLoading('');
+  //   }
+  // }
+
+  const handleDownload = async () => {
     if (actionLoading) return;
     setActionLoading('download');
 
     try {
       const res = await downloadNote(id);
-      
+
       // 1. Get the URL and filename
       let rawUrl = res.data.fileUrl || note.fileUrl;
       const filename = res.data.originalName || `${note.title}.${note.fileType}`;
@@ -166,13 +166,13 @@ const handleDownload = async () => {
       }
 
       // 3. The Blob method automatically names the file using link.download
-      const blob     = await response.blob();
-      const blobUrl  = window.URL.createObjectURL(blob);
-      
-      const link     = document.createElement('a');
-      link.href      = blobUrl;
-      link.download  = filename; // 👉 Naming happens here safely!
-      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename; // 👉 Naming happens here safely!
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -449,7 +449,7 @@ const handleDownload = async () => {
           <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap', marginBottom: '1rem' }}>
             {[
               { label: note.subject?.name, bg: 'var(--orange-light)', color: 'var(--orange-dark)' },
-              { label: note.branch,        bg: 'var(--teal-light)',   color: 'var(--teal)'       },
+              { label: note.branch, bg: 'var(--teal-light)', color: 'var(--teal)' },
               { label: note.unit, bg: 'var(--bg)', color: 'var(--mid)' },
               { label: note.semester, bg: 'var(--bg)', color: 'var(--mid)' },
               { label: '✅ Verified', bg: 'var(--green-light)', color: 'var(--green)' },
@@ -772,7 +772,7 @@ const handleDownload = async () => {
               { label: 'Semester', val: note.semester },
               { label: 'Year', val: note.year },
               { label: 'College', val: note.college },
-                { label: 'Branch',   val: note.branch },
+              { label: 'Branch', val: note.branch },
               { label: 'Type', val: note.fileType?.toUpperCase() },
               { label: 'Size', val: formatFileSize(note.fileSize) },
             ].filter(r => r.val).map((r, i) => (

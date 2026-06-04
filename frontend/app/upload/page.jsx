@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../context/AuthContext'
 import { uploadNote } from '../../services/note.service'
 import { getSubjects } from '../../services/subject.service'
+import { getUniversities } from '../../services/university.service'
 
 export default function UploadPage() {
   const { user, loading: authLoading } = useAuth()
@@ -21,6 +22,7 @@ export default function UploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [universities, setUniversities] = useState([])
 
   const [form, setForm] = useState({
     title: '',
@@ -32,6 +34,9 @@ export default function UploadPage() {
     college: '',
     tags: '',
     branch: '',
+    university: '',   
+  course: '',       
+  category: 'notes', 
   })
 
   const [units, setUnits] = useState([])
@@ -43,7 +48,9 @@ export default function UploadPage() {
 
   // Fetch subjects
   useEffect(() => {
-    if (!authLoading && user) fetchSubjects()
+    if (!authLoading && user) 
+      fetchSubjects()
+      fetchUniversities()
   }, [user, authLoading])
 
   const fetchSubjects = async () => {
@@ -54,6 +61,14 @@ export default function UploadPage() {
       console.error('Failed to fetch subjects:', err)
     }
   }
+  const fetchUniversities = async () => {
+  try {
+    const res = await getUniversities()
+    setUniversities(res.data.data || [])
+  } catch (err) {
+    console.error('Fetch universities error:', err)
+  }
+}
 
   // When subject changes, load its units
   const handleSubjectChange = (e) => {
@@ -135,6 +150,9 @@ export default function UploadPage() {
       formData.append('year', form.year || 'Not specified')
       formData.append('college', form.college)
       formData.append('tags', form.tags)
+      formData.append('university', form.university || '')
+      formData.append('course',     form.course     || '')
+      formData.append('category',   form.category   || 'notes')
 
       // Simulate progress
       const progressInterval = setInterval(() => {
@@ -665,6 +683,72 @@ export default function UploadPage() {
                   </select>
                 </div>
               </div>
+
+              {/* University */}
+<div style={{ marginBottom: '1rem' }}>
+  <label className="field-label">University</label>
+  <select
+    name="university" className="input-clay"
+    value={form.university} onChange={handleChange}
+    style={{ cursor: 'pointer' }}
+  >
+    <option value="">Select university...</option>
+    {universities.map(u => (
+      <option key={u._id} value={u._id}>{u.name} ({u.shortName})</option>
+    ))}
+    <option value="other">Other / Not Listed</option>
+  </select>
+</div>
+
+{/* Course */}
+<div style={{ marginBottom: '1rem' }}>
+  <label className="field-label">Course</label>
+  <select
+    name="course" className="input-clay"
+    value={form.course} onChange={handleChange}
+    style={{ cursor: 'pointer' }}
+  >
+    <option value="">Select course...</option>
+    {['B.Tech', 'MCA', 'MBA', 'B.Sc', 'BCA', 'B.Com', 'Other'].map(c => (
+      <option key={c} value={c}>{c}</option>
+    ))}
+  </select>
+</div>
+
+{/* Category */}
+<div style={{ marginBottom: '1rem' }}>
+  <label className="field-label">
+    Category <span style={{ color: 'var(--orange)' }}>*</span>
+  </label>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+    {[
+      { value: 'notes',               icon: '📝', label: 'Notes',         desc: 'Lecture notes'    },
+      { value: 'pyq',                 icon: '📋', label: 'PYQ Papers',    desc: 'Previous year Qs' },
+      { value: 'important-questions', icon: '⭐', label: 'Imp Questions', desc: 'Expected Qs'      },
+      { value: 'lab',                 icon: '🧪', label: 'Lab Files',     desc: 'Lab manuals'      },
+      { value: 'reference',           icon: '📚', label: 'Reference',     desc: 'Books & refs'     },
+    ].map(cat => (
+      <div
+        key={cat.value}
+        onClick={() => setForm({ ...form, category: cat.value })}
+        style={{
+          padding: '0.7rem', borderRadius: '12px', cursor: 'pointer',
+          border: form.category === cat.value
+            ? '2px solid var(--orange)'
+            : '2px solid #E5E7EB',
+          background: form.category === cat.value
+            ? 'var(--orange-light)'
+            : 'var(--bg)',
+          textAlign: 'center', transition: 'all 0.15s',
+        }}
+      >
+        <div style={{ fontSize: '1.2rem', marginBottom: '3px' }}>{cat.icon}</div>
+        <div style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--dark)' }}>{cat.label}</div>
+        <div style={{ fontSize: '0.62rem', color: 'var(--muted)', fontWeight: 600 }}>{cat.desc}</div>
+      </div>
+    ))}
+  </div>
+</div>
 
               {/* Branch selector — add after year/semester grid */}
 <div style={{ marginBottom: '1rem' }}>

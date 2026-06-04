@@ -9,7 +9,7 @@ const { createNotification } = require('./notification.controller');
 // Get all approved notes — with filters
 const getNotes = async (req, res) => {
   try {
-    const { subject, unit, semester, year, college, branch, search, page = 1, limit = 12 } = req.query
+    const { subject, unit, semester, year, college, branch, university, course, category, search, page = 1, limit = 12 } = req.query
 
 const filter = { status: 'approved' }
 
@@ -20,6 +20,9 @@ if (year)     filter.year     = year
 if (college)  filter.college  = new RegExp(college, 'i')
 if (branch)   filter.branch   = branch   // ✅ add branch filter
 if (search)   filter.title    = new RegExp(search, 'i')
+  if (university) filter.university = university
+if (course)     filter.course     = course
+if (category)   filter.category   = category
 
     const skip = (page - 1) * limit;
 
@@ -83,7 +86,7 @@ const uploadNote = async (req, res) => {
   console.log('📦 Full file object:', req.file)
 
   try {
-  const { title, description, subject, unit, semester, year, college, branch, tags } = req.body
+  const { title, description, subject, unit, semester, year, college, branch, university, course, category, tags } = req.body
 
     // validate required fields — unit is optional
  if (!title || !subject || !semester || !college || !branch) {
@@ -155,6 +158,9 @@ const uploadNote = async (req, res) => {
       unit:         unit?.trim() || 'General',
       semester,
       branch:       branch || 'Other',
+      university: university || null,
+      course:     course     || null,
+      category:   category   || 'notes',
       year:         year?.trim() || 'Not specified',
       college:      college.trim(),
       uploadedBy:   req.user._id,

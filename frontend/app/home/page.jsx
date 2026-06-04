@@ -799,6 +799,7 @@ useEffect(() => {
             { icon: "📖", label: "Browse Notes", href: "/home" },
             { icon: "🔖", label: "Bookmarks", href: "/profile" },
             { icon: "❤️", label: "Liked Notes", href: "/profile" },
+            { icon: "🏛️", label: "Universities", href: "/universities" },
             { icon: "👤", label: "My Profile", href: "/profile" },
           ].map((item) => (
             <Link
@@ -1246,17 +1247,18 @@ useEffect(() => {
               </div>
             )}
 
+            
             {/* ===== NO SUBJECTS MESSAGE ===== */}
-            {selectedBranch && filteredSubjects.length === 0 && (
-              <div style={{
-                background: 'white', borderRadius: '16px',
-                padding: '0.8rem 1rem', border: 'var(--clay-border)',
-                fontSize: '0.82rem', color: 'var(--muted)', fontWeight: 600,
-                textAlign: 'center',
-              }}>
-                No subjects found for {selectedBranch} yet. Be the first to upload!
-              </div>
-            )}
+{selectedBranch && filteredSubjects.length === 0 && notes.length === 0 && ( // 👈 ADDED notes.length === 0
+  <div style={{
+    background: 'white', borderRadius: '16px',
+    padding: '0.8rem 1rem', border: 'var(--clay-border)',
+    fontSize: '0.82rem', color: 'var(--muted)', fontWeight: 600,
+    textAlign: 'center',
+  }}>
+    No subjects or notes found for {selectedBranch} yet. Be the first to upload!
+  </div>
+)}
           </div>
 
 
