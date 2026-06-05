@@ -25,7 +25,7 @@ const io = new Server(server, {
       const allowedOrigins = [
         'http://localhost:3000',
         'http://localhost:5173',
-        'https://notesswap-mu.vercel.app',
+        'https://noteswap.smarttechbros.com',
         'https://note-swap.smarttechbros.com',
         process.env.CLIENT_URL,
       ].filter(Boolean)
